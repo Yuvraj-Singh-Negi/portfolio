@@ -43,15 +43,18 @@ export function WorkspaceLayout() {
     <div
       ref={containerRef}
       className="flex h-screen w-screen overflow-hidden bg-[#050505]"
+      role="application"
+      aria-label="Workspace"
     >
       {/* Chat Panel */}
-      <div
+      <aside
         className="flex h-full flex-shrink-0 flex-col overflow-hidden border-r border-zinc-800"
         style={{ width: `${chatWidth}%` }}
+        aria-label="Chat panel"
       >
         <GenerationProgress />
         <ChatPanel />
-      </div>
+      </aside>
 
       {/* Resize Handle */}
       <div
@@ -60,14 +63,25 @@ export function WorkspaceLayout() {
           isDragging && "bg-[#7DD3FC]/50"
         )}
         onMouseDown={handleMouseDown}
+        role="separator"
+        tabIndex={0}
+        aria-orientation="vertical"
+        aria-label="Resize chat panel"
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowLeft') {
+            setChatWidth(Math.max(20, chatWidth - 2));
+          } else if (e.key === 'ArrowRight') {
+            setChatWidth(Math.min(50, chatWidth + 2));
+          }
+        }}
       >
         <div className="absolute inset-y-0 -left-1 -right-1" />
       </div>
 
       {/* Editor Panel */}
-      <div className="flex h-full flex-1 flex-col overflow-hidden">
+      <main className="flex h-full flex-1 flex-col overflow-hidden" aria-label="Editor panel">
         <EditorPanel />
-      </div>
+      </main>
     </div>
   );
 }

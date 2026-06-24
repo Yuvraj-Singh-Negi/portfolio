@@ -62,7 +62,7 @@ export function ChatPanel() {
   return (
     <div className="flex h-full flex-col bg-[#050505]">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto px-3 py-4" role="log" aria-live="polite" aria-label="Chat messages">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center gap-2">
             <p className="text-sm text-zinc-600">Start a conversation</p>
@@ -74,7 +74,7 @@ export function ChatPanel() {
 
         <div className="flex flex-col gap-3">
           {messages.map((msg, i) => (
-            <div key={msg.id} className="group">
+            <div key={msg.id} className="group" data-message-id={msg.id}>
               <div
                 className={`flex gap-2 ${
                   msg.role === "user" ? "justify-end" : "justify-start"
@@ -86,6 +86,8 @@ export function ChatPanel() {
                       ? "bg-zinc-800 text-zinc-200"
                       : "bg-zinc-900 text-zinc-300"
                   }`}
+                  role="article"
+                  aria-label={msg.role === "user" ? "Your message" : "Assistant response"}
                 >
                   {editingMessageIndex === i ? (
                     <div className="flex flex-col gap-2">
@@ -97,14 +99,18 @@ export function ChatPanel() {
                       />
                       <div className="flex gap-2">
                         <button
+                          type="button"
                           onClick={() => saveEdit(i)}
                           className="rounded bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300 hover:bg-zinc-600"
+                          aria-label="Save edited message"
                         >
                           Save
                         </button>
                         <button
+                          type="button"
                           onClick={() => setEditingMessageIndex(null)}
                           className="rounded px-2 py-0.5 text-xs text-zinc-500 hover:text-zinc-400"
+                          aria-label="Cancel editing"
                         >
                           Cancel
                         </button>
@@ -120,8 +126,10 @@ export function ChatPanel() {
               {msg.role === "user" && editingMessageIndex !== i && (
                 <div className="mt-1 flex justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
+                    type="button"
                     onClick={() => startEditing(i, msg.content)}
                     className="text-[10px] text-zinc-600 hover:text-zinc-400"
+                    aria-label="Edit message"
                   >
                     Edit
                   </button>
@@ -143,19 +151,28 @@ export function ChatPanel() {
             onKeyDown={handleKeyDown}
             placeholder="Describe what you want to build..."
             rows={1}
-            className="max-h-32 flex-1 resize-none bg-transparent text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none"
+            className="max-h-32 flex-1 resize-none bg-transparent text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50"
+            aria-label="Message input"
+            aria-describedby={isGenerating ? "generating-status" : undefined}
           />
           <button
+            type="button"
             onClick={handleSend}
             disabled={!input.trim() || isGenerating}
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-800 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200 disabled:opacity-50"
+            className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-800 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-zinc-700"
+            aria-label={isGenerating ? "Generating response..." : "Send message"}
           >
             {isGenerating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-4 w-4" aria-hidden="true" />
             )}
           </button>
+          {isGenerating && (
+            <span id="generating-status" className="sr-only">
+              Generating response
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { logger, logRequest } from "@/lib/logger";
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -11,12 +12,20 @@ const RATE_LIMIT = {
 const AUTH_ROUTES = ["/api/auth", "/api/v1"];
 const PROTECTED_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
 
+function generateRequestId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export function middleware(request: NextRequest) {
+  const startTime = Date.now();
+  const requestId = generateRequestId();
   const ip = request.headers.get("x-forwarded-for") ?? "unknown";
   const path = request.nextUrl.pathname;
   const method = request.method;
 
-  // Rate limiting for API routes
+  const response = NextResponse.next();
+  response.headers.set("x-request-id", requestId);
+
   if (path.startsWith("/api/")) {
     const now = Date.now();
     const key = `${ip}:${path}`;
@@ -27,31 +36,32 @@ export function middleware(request: NextRequest) {
     } else {
       entry.count++;
       if (entry.count > RATE_LIMIT.max) {
+        logger.warn({ requestId, ip, path, count: entry.count }, 'Rate limit exceeded');
         return NextResponse.json(
           { error: "Too many requests" },
-          { status: 429 }
+          { status: 429, headers: { "x-request-id": requestId } }
+        );
+      }
+    }
+
+    if (
+      PROTECTED_METHODS.includes(method) &&
+      !AUTH_ROUTES.some((route) => path.startsWith(route))
+    ) {
+      const origin = request.headers.get("origin");
+      const host = request.headers.get("host");
+      if (origin && host && !origin.includes(host)) {
+        logger.warn({ requestId, ip, path, origin, host }, 'CSRF validation failed');
+        return NextResponse.json(
+          { error: "CSRF validation failed" },
+          { status: 403, headers: { "x-request-id": requestId } }
         );
       }
     }
   }
 
-  // CSRF check for state-changing requests on auth routes
-  if (
-    path.startsWith("/api/") &&
-    PROTECTED_METHODS.includes(method) &&
-    !AUTH_ROUTES.some((route) => path.startsWith(route))
-  ) {
-    const origin = request.headers.get("origin");
-    const host = request.headers.get("host");
-    if (origin && host && !origin.includes(host)) {
-      return NextResponse.json(
-        { error: "CSRF validation failed" },
-        { status: 403 }
-      );
-    }
-  }
-
-  return NextResponse.next();
+  logRequest(request, requestId, startTime);
+  return response;
 }
 
 export const config = {

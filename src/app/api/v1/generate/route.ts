@@ -1,28 +1,50 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getProvider, getDefaultProvider } from "@/providers/registry";
 import type { ProviderType, GenerationTemplate } from "@/providers/types";
 import { getTemplateSystemPrompt } from "@/services/templates";
 import { checkUsageLimit, checkTokenLimit } from "@/services/cost-controls";
 import { enqueueJob } from "@/services/jobs/queue";
+import { rateLimit, getIdentifier } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
+
+const generateSchema = z.object({
+  userId: z.string().min(1),
+  projectId: z.string().min(1),
+  prompt: z.string().min(10).max(50000),
+  provider: z.enum(['ANTHROPIC', 'OPENAI', 'DEEPSEEK', 'GOOGLE', 'GROQ', 'XIAOMI', 'OPENROUTER']).optional(),
+  model: z.string().max(100).optional(),
+  template: z.enum(['nextjs', 'react-vite', 'landing-page', 'dashboard', 'custom']).optional(),
+  maxTokens: z.number().int().positive().max(100000).optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  async: z.boolean().optional(),
+});
 
 export async function POST(request: Request) {
+  const requestId = request.headers.get('x-request-id') ?? `gen-${Date.now()}`;
+
+  const rl = await rateLimit(getIdentifier(request));
+  if (!rl.success) {
+    logger.warn({ requestId }, 'Rate limit exceeded');
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Please slow down.' },
+      { status: 429, headers: { 'Retry-After': '60', 'X-RateLimit-Remaining': '0', 'X-Request-ID': requestId } }
+    );
+  }
+
   const body = await request.json();
-  const { userId, projectId, prompt, provider, model, template, maxTokens, temperature } = body;
+  const parsed = generateSchema.safeParse(body);
 
-  if (!userId || !projectId || !prompt) {
+  if (!parsed.success) {
+    logger.warn({ requestId, errors: parsed.error.flatten().fieldErrors }, 'Validation failed');
     return NextResponse.json(
-      { error: "userId, projectId, and prompt are required" },
-      { status: 400 }
+      { error: 'Invalid request', details: parsed.error.flatten().fieldErrors },
+      { status: 400, headers: { 'X-Request-ID': requestId } }
     );
   }
 
-  if (typeof prompt !== "string" || prompt.length < 10) {
-    return NextResponse.json(
-      { error: "Prompt must be at least 10 characters" },
-      { status: 400 }
-    );
-  }
+  const { userId, projectId, prompt, provider, model, template, maxTokens, temperature } = parsed.data;
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
@@ -30,6 +52,7 @@ export async function POST(request: Request) {
   });
 
   if (!project || project.ownerId !== userId) {
+    logger.warn({ requestId, userId, projectId }, 'Project not found or access denied');
     return NextResponse.json(
       { error: "Project not found or access denied" },
       { status: 404 }
@@ -72,7 +95,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const isAsync = body.async === true;
+  const isAsync = parsed.data.async === true;
 
   if (isAsync) {
     enqueueJob("ai-generation", {
@@ -92,7 +115,7 @@ export async function POST(request: Request) {
       generationId: generation.id,
       status: "QUEUED",
       message: "Generation queued for background processing",
-    });
+    }, { headers: { 'X-RateLimit-Remaining': String(rl.remaining) } });
   }
 
   try {
@@ -111,6 +134,8 @@ export async function POST(request: Request) {
       template: template as GenerationTemplate,
     });
     const duration = Date.now() - startTime;
+
+    logger.info({ requestId, generationId: generation.id, files: result.files.length, duration }, 'Generation completed');
 
     const fileMap: Record<string, string> = {};
     for (const file of result.files) {
@@ -153,9 +178,11 @@ export async function POST(request: Request) {
       files: result.files,
       tokensUsed: updated.tokensUsed,
       duration,
-    });
+    }, { headers: { 'X-RateLimit-Remaining': String(rl.remaining), 'X-Request-ID': requestId } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Generation failed";
+
+    logger.error({ requestId, generationId: generation.id, error: message }, 'Generation failed');
 
     await prisma.generation.update({
       where: { id: generation.id },
@@ -172,12 +199,22 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: message, generationId: generation.id },
-      { status: 500 }
+      { status: 500, headers: { 'X-RateLimit-Remaining': String(rl.remaining), 'X-Request-ID': requestId } }
     );
   }
 }
 
 export async function GET(request: Request) {
+  const requestId = request.headers.get('x-request-id') ?? `gen-get-${Date.now()}`;
+  const rl = await rateLimit(getIdentifier(request));
+  if (!rl.success) {
+    logger.warn({ requestId }, 'Rate limit exceeded');
+    return NextResponse.json(
+      { error: 'Rate limit exceeded' },
+      { status: 429, headers: { 'X-Request-ID': requestId } }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const generationId = searchParams.get("id");
   const projectId = searchParams.get("projectId");

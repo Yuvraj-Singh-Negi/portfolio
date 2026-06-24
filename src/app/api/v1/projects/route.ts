@@ -1,7 +1,23 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { rateLimit, getIdentifier } from "@/lib/rate-limit";
+
+const projectSchema = z.object({
+  userId: z.string().min(1),
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+});
 
 export async function GET(request: Request) {
+  const rl = await rateLimit(getIdentifier(request));
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded' },
+      { status: 429 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
   const includeArchived = searchParams.get("includeArchived") === "true";
@@ -29,19 +45,29 @@ export async function GET(request: Request) {
     },
   });
 
-  return NextResponse.json({ projects });
+  return NextResponse.json({ projects }, { headers: { 'X-RateLimit-Remaining': String(rl.remaining) } });
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { userId, name, description } = body;
-
-  if (!userId || !name) {
+  const rl = await rateLimit(getIdentifier(request));
+  if (!rl.success) {
     return NextResponse.json(
-      { error: "userId and name are required" },
+      { error: 'Rate limit exceeded' },
+      { status: 429 }
+    );
+  }
+
+  const body = await request.json();
+  const parsed = projectSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid request', details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     );
   }
+
+  const { userId, name, description } = parsed.data;
 
   const project = await prisma.$transaction(async (tx) => {
     const newProject = await tx.project.create({
@@ -72,5 +98,5 @@ export async function POST(request: Request) {
     return newProject;
   });
 
-  return NextResponse.json({ project }, { status: 201 });
+  return NextResponse.json({ project }, { status: 201, headers: { 'X-RateLimit-Remaining': String(rl.remaining) } });
 }

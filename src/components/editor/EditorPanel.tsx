@@ -33,8 +33,8 @@ export function EditorPanel() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-[#050505]">
-      <div className="flex items-center border-b border-zinc-800 bg-[#050505]">
+    <div className="flex h-full flex-col bg-[#050505]" role="tabpanel" aria-label="File editor">
+      <div className="flex items-center border-b border-zinc-800 bg-[#050505]" role="tablist" aria-label="Open files">
         <div className="flex flex-1 overflow-x-auto">
           {openTabs.map((tabPath) => {
             const isActive = tabPath === activeTab;
@@ -42,6 +42,10 @@ export function EditorPanel() {
             return (
               <button
                 key={tabPath}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${tabPath}`}
+                id={`tab-${tabPath}`}
                 onClick={() => setActiveTab(tabPath)}
                 onMouseDown={(e) => {
                   if (e.button === 1) closeTab(tabPath);
@@ -54,13 +58,15 @@ export function EditorPanel() {
               >
                 <span className="truncate max-w-[120px]">{fileName}</span>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     closeTab(tabPath);
                   }}
-                  className="ml-1 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-zinc-700"
+                  className="ml-1 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-zinc-700 focus:opacity-100"
+                  aria-label={`Close ${fileName}`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </button>
             );
@@ -71,15 +77,22 @@ export function EditorPanel() {
       <div className="flex-1 overflow-hidden">
         <EditorErrorBoundary>
           {activeTab && vfs[activeTab] !== undefined && (
-            <MonacoEditor
-              key={activeTab}
-              path={activeTab}
-              value={vfs[activeTab]!}
-              language={detectLanguage(activeTab)}
-              onChange={(newValue) => {
-                updateFile(activeTab, newValue);
-              }}
-            />
+            <div
+              role="tabpanel"
+              id={`panel-${activeTab}`}
+              aria-labelledby={`tab-${activeTab}`}
+              aria-label={`Editing ${activeTab}`}
+            >
+              <MonacoEditor
+                key={activeTab}
+                path={activeTab}
+                value={vfs[activeTab]!}
+                language={detectLanguage(activeTab)}
+                onChange={(newValue) => {
+                  updateFile(activeTab, newValue);
+                }}
+              />
+            </div>
           )}
         </EditorErrorBoundary>
       </div>
