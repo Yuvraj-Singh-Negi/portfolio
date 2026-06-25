@@ -1,22 +1,28 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "@/styles/globals.css";
-import { Providers } from "@/components/providers/Providers";
-import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
+});
+
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: {
-    default: "OpenCode - AI Software Generation Platform",
-    template: "%s | OpenCode",
-  },
+  metadataBase: new URL("https://yuvrajsinghnegi.dev"),
+  title: "Yuvraj Singh Negi — Full-Stack Developer",
   description:
-    "Generate production-grade applications with AI. Build, preview, and deploy in one workspace.",
+    "Full-Stack Developer specializing in frontend engineering and product design. Building modern web experiences with React, Next.js, and TypeScript.",
 };
 
 export default function RootLayout({
@@ -26,10 +32,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-[#050505] text-zinc-100`}>
-        <ErrorBoundary>
-          <Providers>{children}</Providers>
-        </ErrorBoundary>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#050505] text-zinc-100`}
+      >
+        <div className="noise-overlay fixed inset-0 z-[9999]" aria-hidden="true" />
+        {children}
       </body>
     </html>
   );
