@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.2.0",
+    "@hookform/resolvers": "^5.4.0",
     "@prisma/client": "^6.5.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -51,6 +52,7 @@
     "posthog-js": "^1.216.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.80.0",
     "react-hot-toast": "^2.5.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",

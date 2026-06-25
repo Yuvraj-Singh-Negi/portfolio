@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function HomePage() {
+export default function OpenCodeLanding() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#050505] px-4">
       <div className="flex max-w-lg flex-col items-center gap-6 text-center">
