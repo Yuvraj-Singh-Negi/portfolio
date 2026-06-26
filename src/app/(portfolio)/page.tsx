@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Skills } from "@/components/sections/Skills";
+import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
 
 export default function PortfolioPage() {
   return (
@@ -10,7 +11,8 @@ export default function PortfolioPage() {
       <main>
         <Hero />
         <Skills />
-        {/* Phase 4-5 sections mount here */}
+        <FeaturedProjects />
+        {/* Phase 5 sections mount here */}
       </main>
       <Footer />
     </>
