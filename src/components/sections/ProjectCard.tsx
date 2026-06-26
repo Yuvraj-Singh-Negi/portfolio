@@ -11,14 +11,22 @@ interface ProjectCardProps {
   index: number;
 }
 
-function getOgImageUrl(liveUrl: string): string {
-  const base = liveUrl.replace(/\/$/, "");
-  return `${base}/api/og`;
+function tryLoadImage(urls: string[]): Promise<string | null> {
+  const tryNext = (i: number): Promise<string | null> => {
+    if (i >= urls.length) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(urls[i]!);
+      img.onerror = () => tryNext(i + 1).then((v) => resolve(v));
+      img.src = urls[i]!;
+    });
+  };
+  return tryNext(0);
 }
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [imgError, setImgError] = useState(false);
+  const [imgError, setImgError] = useState(true);
   const delay = Math.min(index * 1 + 1, 5);
   const ref = useScrollReveal({ delay });
   const fetched = useRef(false);
@@ -26,11 +34,37 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
-    const url = getOgImageUrl(project.liveUrl);
-    const img = new Image();
-    img.onload = () => setImgSrc(url);
-    img.onerror = () => setImgError(true);
-    img.src = url;
+
+    const base = project.liveUrl.replace(/\/$/, "");
+
+    const urls = [
+      `${base}/api/og`,
+      `${base}/og-image.png`,
+      `${base}/opengraph-image.png`,
+    ];
+
+    tryLoadImage(urls).then((url) => {
+      if (url) {
+        setImgSrc(url);
+        setImgError(false);
+      } else {
+        fetch(
+          `https://api.microlink.io/?url=${encodeURIComponent(project.liveUrl)}&screenshot=true&meta=false`
+        )
+          .then((r) => r.json())
+          .then((data) => {
+            const src =
+              data?.data?.image?.url ||
+              data?.data?.logo?.url ||
+              data?.data?.screenshot?.url;
+            if (src) {
+              setImgSrc(src);
+              setImgError(false);
+            }
+          })
+          .catch(() => {});
+      }
+    });
   }, [project.liveUrl]);
 
   return (
@@ -45,11 +79,11 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         >
           <div className="overflow-hidden">
             <div className="origin-center transition-transform duration-700 ease-out group-hover:scale-105">
-              {imgError || !imgSrc ? (
+              {imgError ? (
                 <ProjectPlaceholder title={project.title} index={index} />
               ) : (
                 <img
-                  src={imgSrc}
+                  src={imgSrc!}
                   alt={`Screenshot of ${project.title}`}
                   className="aspect-[16/10] w-full object-cover"
                   onError={() => setImgError(true)}
