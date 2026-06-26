@@ -127,7 +127,7 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Visual — concentric rings */}
+          {/* Visual — profile image with ring */}
           <motion.div
             className="hidden items-center justify-center lg:flex"
             variants={scaleIn}
@@ -136,49 +136,20 @@ export function Hero() {
             transition={{ ...slow, delay: 0.6 }}
           >
             <div className="relative flex h-[420px] w-[420px] items-center justify-center">
-              {[360, 280, 200, 120].map((size, i) => (
-                <motion.div
-                  key={size}
-                  className="absolute rounded-full border"
-                  style={{
-                    width: size,
-                    height: size,
-                    borderColor: `rgba(255,255,255,${0.06 - i * 0.01})`,
-                  }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    ...easeOutExpo,
-                    delay: 0.8 + i * 0.15,
-                    duration: 1,
-                  }}
-                >
-                  <motion.div
-                    className="h-full w-full rounded-full"
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 20 + i * 5,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  >
-                    <div
-                      className="absolute rounded-full"
-                      style={{
-                        width: 4,
-                        height: 4,
-                        top: -2,
-                        left: "50%",
-                        marginLeft: -2,
-                        background: `rgba(255,255,255,${0.15 - i * 0.03})`,
-                      }}
-                    />
-                  </motion.div>
-                </motion.div>
-              ))}
-              <span className="select-none text-6xl font-bold tracking-tighter text-zinc-800">
-                YS
-              </span>
+              <div className="absolute h-[360px] w-[360px] rounded-full border border-white/[0.06]" />
+              <div className="absolute h-[280px] w-[280px] rounded-full border border-white/[0.04]" />
+              <motion.div
+                className="absolute h-[200px] w-[200px] overflow-hidden rounded-full border border-white/[0.08]"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...easeOutExpo, delay: 1, duration: 1 }}
+              >
+                <img
+                  src="/profile.png"
+                  alt={personalInfo.name}
+                  className="h-full w-full object-cover"
+                />
+              </motion.div>
             </div>
           </motion.div>
         </div>
