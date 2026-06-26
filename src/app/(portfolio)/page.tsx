@@ -7,12 +7,12 @@ import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
 
 const Experience = dynamic(
   () => import("@/components/sections/Experience").then((m) => m.Experience),
-  { loading: () => <div className="h-screen" aria-hidden="true" /> }
+  { loading: () => null }
 );
 
 const Contact = dynamic(
   () => import("@/components/sections/Contact").then((m) => m.Contact),
-  { loading: () => <div className="h-screen" aria-hidden="true" /> }
+  { loading: () => null }
 );
 
 const Social = dynamic(
