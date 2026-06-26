@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Send } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { fadeUp, staggerContainer, easeOutExpo } from "@/lib/animations";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useIsClient } from "@/hooks/useIsClient";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -105,11 +102,7 @@ function ContactForm() {
         className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-xl bg-zinc-100 px-6 text-small font-medium text-zinc-900 transition-all duration-300 hover:bg-zinc-200 hover:shadow-[0_0_30px_rgba(255,255,255,0.04)] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {isSubmitting ? (
-          <span className="flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-zinc-900" />
-            Sending
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-zinc-900" />
-          </span>
+          <span className="flex items-center gap-2">Sending...</span>
         ) : (
           <>
             Send Message <Send className="h-4 w-4" />
@@ -127,8 +120,7 @@ function ContactForm() {
 }
 
 export function Contact() {
-  const isClient = useIsClient();
-  const { ref, isVisible } = useScrollAnimation();
+  const ref = useScrollReveal();
 
   return (
     <section id="contact" className="py-32" aria-label="Contact">
@@ -140,23 +132,9 @@ export function Contact() {
       </Container>
 
       <Container>
-        {isClient ? (
-          <motion.div
-            ref={ref}
-            className="mx-auto max-w-xl"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isVisible ? "visible" : "hidden"}
-          >
-            <motion.div variants={fadeUp} transition={easeOutExpo}>
-              <ContactForm />
-            </motion.div>
-          </motion.div>
-        ) : (
-          <div ref={ref} className="mx-auto max-w-xl">
-            <ContactForm />
-          </div>
-        )}
+        <div ref={ref} className="reveal mx-auto max-w-xl">
+          <ContactForm />
+        </div>
       </Container>
     </section>
   );

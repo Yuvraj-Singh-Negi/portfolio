@@ -1,12 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { skills } from "@/data/portfolio";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { staggerContainer } from "@/lib/animations";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useIsClient } from "@/hooks/useIsClient";
 
 function MarqueeRow({
   items,
@@ -35,8 +31,6 @@ function MarqueeRow({
 }
 
 export function Skills() {
-  const isClient = useIsClient();
-  const { ref, isVisible } = useScrollAnimation();
   const mid = Math.ceil(skills.length / 2);
   const row1 = skills.slice(0, mid);
   const row2 = skills.slice(mid);
@@ -50,23 +44,9 @@ export function Skills() {
         />
       </Container>
 
-      <div ref={ref}>
-        {isClient ? (
-          <motion.div
-            className="space-y-3"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isVisible ? "visible" : "hidden"}
-          >
-            <MarqueeRow items={row1} />
-            <MarqueeRow items={row2} reverse />
-          </motion.div>
-        ) : (
-          <div className="space-y-3">
-            <MarqueeRow items={row1} />
-            <MarqueeRow items={row2} reverse />
-          </div>
-        )}
+      <div className="space-y-3">
+        <MarqueeRow items={row1} />
+        <MarqueeRow items={row2} reverse />
       </div>
     </section>
   );

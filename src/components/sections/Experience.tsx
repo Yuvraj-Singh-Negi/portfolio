@@ -1,12 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { education, academicHighlight, timeline } from "@/data/portfolio";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { fadeUp, staggerContainer, easeOutExpo } from "@/lib/animations";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useIsClient } from "@/hooks/useIsClient";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface TimelineEntry {
   date: string;
@@ -38,59 +35,17 @@ const entries: TimelineEntry[] = [
     })),
 ];
 
-function TimelineLine({ isVisible }: { isVisible: boolean }) {
-  const isClient = useIsClient();
-
-  if (!isClient) {
-    return <div className="absolute left-[11px] top-0 bottom-0 w-px bg-white/[0.06]" />;
-  }
+function TimelineCard({ entry, index }: { entry: TimelineEntry; index: number }) {
+  const delay = Math.min((index + 1) * 2, 5);
+  const ref = useScrollReveal({ delay });
 
   return (
-    <div className="absolute left-[11px] top-0 bottom-0 w-px overflow-hidden">
-      <motion.div
-        className="h-full w-full bg-white/[0.06]"
-        initial={{ scaleY: 0, originY: 0 }}
-        animate={isVisible ? { scaleY: 1 } : { scaleY: 0 }}
-        transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-      />
-    </div>
-  );
-}
-
-function TimelineDot({ delay }: { delay: number }) {
-  const isClient = useIsClient();
-
-  if (!isClient) {
-    return (
+    <div ref={ref} className={`reveal reveal-delay-${delay} relative pl-12 pb-16 last:pb-0`}>
       <div className="absolute left-0 top-1">
         <div className="h-[23px] w-[23px] rounded-full border-2 border-white/[0.12] bg-[#050505] flex items-center justify-center">
           <div className="h-[7px] w-[7px] rounded-full bg-white/[0.15]" />
         </div>
       </div>
-    );
-  }
-
-  return (
-    <motion.div
-      className="absolute left-0 top-1"
-      initial={{ scale: 0, opacity: 0 }}
-      whileInView={{ scale: 1, opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.4, ease: easeOutExpo }}
-    >
-      <div className="h-[23px] w-[23px] rounded-full border-2 border-white/[0.12] bg-[#050505] flex items-center justify-center">
-        <div className="h-[7px] w-[7px] rounded-full bg-white/[0.15]" />
-      </div>
-    </motion.div>
-  );
-}
-
-function TimelineCard({ entry, index, isClient }: { entry: TimelineEntry; index: number; isClient: boolean }) {
-  const { ref, isVisible } = useScrollAnimation();
-
-  const content = (
-    <div className="relative pl-12 pb-16 last:pb-0">
-      <TimelineDot delay={index * 0.15} />
       <div className="space-y-2">
         <span className="block text-tiny tracking-[0.12em] text-zinc-600 uppercase">
           {entry.date}
@@ -105,28 +60,9 @@ function TimelineCard({ entry, index, isClient }: { entry: TimelineEntry; index:
       </div>
     </div>
   );
-
-  if (!isClient) {
-    return <div ref={ref}>{content}</div>;
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={fadeUp}
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      transition={{ ...easeOutExpo, delay: index * 0.15 }}
-    >
-      {content}
-    </motion.div>
-  );
 }
 
 export function Experience() {
-  const isClient = useIsClient();
-  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
-
   return (
     <section id="experience" className="py-32" aria-label="Experience and education">
       <Container>
@@ -137,27 +73,12 @@ export function Experience() {
       </Container>
 
       <Container>
-        {isClient ? (
-          <motion.div
-            ref={ref}
-            className="relative mx-auto max-w-2xl"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isVisible ? "visible" : "hidden"}
-          >
-            <TimelineLine isVisible={isVisible} />
-            {entries.map((entry, index) => (
-              <TimelineCard key={entry.title} entry={entry} index={index} isClient={true} />
-            ))}
-          </motion.div>
-        ) : (
-          <div className="relative mx-auto max-w-2xl">
-            <TimelineLine isVisible={false} />
-            {entries.map((entry, index) => (
-              <TimelineCard key={entry.title} entry={entry} index={index} isClient={false} />
-            ))}
-          </div>
-        )}
+        <div className="relative mx-auto max-w-2xl">
+          <div className="absolute left-[11px] top-0 bottom-0 w-px bg-white/[0.06]" />
+          {entries.map((entry, index) => (
+            <TimelineCard key={entry.title} entry={entry} index={index} />
+          ))}
+        </div>
       </Container>
     </section>
   );

@@ -1,152 +1,42 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { personalInfo } from "@/data/portfolio";
 import { AnimatedOrbs } from "@/components/sections/AnimatedOrbs";
-import { useIsClient } from "@/hooks/useIsClient";
-import {
-  fadeUp,
-  fadeIn,
-  scaleIn,
-  staggerSlow,
-  easeOutExpo,
-  slow,
-} from "@/lib/animations";
-
-function SplitText({
-  text,
-  delay = 0,
-  className,
-  isClient,
-}: {
-  text: string;
-  delay?: number;
-  className?: string;
-  isClient: boolean;
-}) {
-  const words = text.split(" ");
-
-  if (!isClient) {
-    return <h1 className={className}>{text}</h1>;
-  }
-
-  return (
-    <h1 className={className} aria-label={text}>
-      {words.map((word, i) => (
-        <span key={i} className="inline-block overflow-hidden">
-          <motion.span
-            className="inline-block"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...easeOutExpo, delay: delay + i * 0.08 }}
-          >
-            {word}
-            {i < words.length - 1 && "\u00A0"}
-          </motion.span>
-        </span>
-      ))}
-    </h1>
-  );
-}
 
 export function Hero() {
-  const isClient = useIsClient();
-
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (!isClient) {
-    return (
-      <section className="relative flex min-h-dvh items-center overflow-hidden" aria-label="Hero introduction">
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10">
-          <div className="grid min-h-dvh items-center gap-12 pt-24 pb-16 lg:grid-cols-2">
-            <div className="flex flex-col gap-6">
-              <p className="text-tiny tracking-[0.15em] text-zinc-600 uppercase">
-                {personalInfo.location}
-              </p>
-              <h1 className="text-hero text-zinc-100">{personalInfo.name}</h1>
-              <p className="text-subtitle text-gradient-white max-w-lg">
-                {personalInfo.title}
-              </p>
-              <p className="max-w-md text-body text-zinc-500 leading-relaxed">
-                Frontend-focused developer building production-grade web experiences.
-              </p>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <a href="#work" className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-100 px-7 text-small font-medium text-zinc-900 transition-all duration-300 hover:bg-zinc-200">
-                  View Projects
-                </a>
-                <a href="#contact" className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-7 text-small text-zinc-300 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.06]">
-                  Contact Me
-                </a>
-              </div>
-            </div>
-            <div className="hidden items-center justify-center lg:flex">
-              <div className="relative flex h-[420px] w-[420px] items-center justify-center">
-                <div className="absolute h-[360px] w-[360px] rounded-full border border-white/[0.06]" />
-                <div className="absolute h-[280px] w-[280px] rounded-full border border-white/[0.04]" />
-                <div className="absolute h-[200px] w-[200px] overflow-hidden rounded-full border border-white/[0.08]">
-                  <img src="/profile.png" alt={personalInfo.name} className="h-full w-full object-cover" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section
-      className="relative flex min-h-dvh items-center overflow-hidden"
-      aria-label="Hero introduction"
-    >
+    <section className="relative flex min-h-dvh items-center overflow-hidden" aria-label="Hero introduction">
       <AnimatedOrbs />
 
       <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10">
         <div className="grid min-h-dvh items-center gap-12 pt-24 pb-16 lg:grid-cols-2">
-          <motion.div
-            className="flex flex-col gap-6"
-            variants={staggerSlow}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.p
-              className="text-tiny tracking-[0.15em] text-zinc-600 uppercase"
-              variants={fadeIn}
-              transition={{ ...easeOutExpo, delay: 0.1 }}
-            >
+          {/* Content */}
+          <div className="flex flex-col gap-6">
+            <p className="animate-hero-location text-tiny tracking-[0.15em] text-zinc-600 uppercase">
               {personalInfo.location}
-            </motion.p>
+            </p>
 
-            <SplitText text={personalInfo.name} delay={0.3} className="text-hero text-zinc-100" isClient={true} />
+            <h1 className="animate-hero-heading text-hero text-zinc-100">
+              {personalInfo.name}
+            </h1>
 
-            <motion.p
-              className="text-subtitle text-gradient-white max-w-lg"
-              variants={fadeIn}
-              transition={{ ...easeOutExpo, delay: 0.7 }}
-            >
+            <p className="animate-hero-title text-subtitle text-gradient-white max-w-lg">
               {personalInfo.title}
-            </motion.p>
+            </p>
 
-            <motion.p
-              className="max-w-md text-body text-zinc-500 leading-relaxed"
-              variants={fadeUp}
-              transition={{ ...easeOutExpo, delay: 0.9 }}
-            >
+            <p className="animate-hero-description max-w-md text-body text-zinc-500 leading-relaxed">
               Frontend-focused developer building production-grade web experiences.
               I architect interfaces that balance performance, accessibility, and
               visual clarity.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="flex flex-wrap gap-4 pt-2"
-              variants={fadeUp}
-              transition={{ ...easeOutExpo, delay: 1.1 }}
-            >
+            <div className="animate-hero-ctas flex flex-wrap gap-4 pt-2">
               <a
                 href="#work"
                 onClick={(e) => handleScroll(e, "#work")}
@@ -161,49 +51,29 @@ export function Hero() {
               >
                 Contact Me
               </a>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            className="hidden items-center justify-center lg:flex"
-            variants={scaleIn}
-            initial="hidden"
-            animate="visible"
-            transition={{ ...slow, delay: 0.6 }}
-          >
+          {/* Visual */}
+          <div className="animate-hero-visual hidden items-center justify-center lg:flex">
             <div className="relative flex h-[420px] w-[420px] items-center justify-center">
               <div className="absolute h-[360px] w-[360px] rounded-full border border-white/[0.06]" />
               <div className="absolute h-[280px] w-[280px] rounded-full border border-white/[0.04]" />
-              <motion.div
-                className="absolute h-[200px] w-[200px] overflow-hidden rounded-full border border-white/[0.08]"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ ...easeOutExpo, delay: 1, duration: 1 }}
-              >
+              <div className="animate-hero-ring absolute h-[200px] w-[200px] overflow-hidden rounded-full border border-white/[0.08]" style={{ animationDelay: "1s" }}>
                 <img
                   src="/profile.png"
                   alt={personalInfo.name}
                   className="h-full w-full object-cover"
                 />
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-      >
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ArrowDown className="h-4 w-4 text-zinc-700" />
-        </motion.div>
-      </motion.div>
+      <div className="animate-hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2">
+        <ArrowDown className="h-4 w-4 text-zinc-700" />
+      </div>
     </section>
   );
 }

@@ -1,9 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { fadeUp, easeOutExpo } from "@/lib/animations";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface TextRevealProps {
   children: React.ReactNode;
@@ -18,32 +15,11 @@ export function TextReveal({
   delay = 0,
   className,
 }: TextRevealProps) {
-  const { ref, isVisible } = useScrollAnimation();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return (
-      <Tag ref={ref} className={className}>
-        {children}
-      </Tag>
-    );
-  }
+  const ref = useScrollReveal({ delay });
 
   return (
-    <Tag ref={ref} className={className}>
-      <motion.span
-        className="inline-block"
-        variants={fadeUp}
-        initial="hidden"
-        animate={isVisible ? "visible" : "hidden"}
-        transition={{ ...easeOutExpo, delay }}
-      >
-        {children}
-      </motion.span>
+    <Tag ref={ref} className={`reveal ${className ?? ""}`}>
+      {children}
     </Tag>
   );
 }

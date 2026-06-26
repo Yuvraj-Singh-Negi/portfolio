@@ -1,9 +1,6 @@
-"use client";
-
 import { Github, Linkedin, Mail } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/portfolio";
 import { Container } from "@/components/layout/Container";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const iconMap = {
   github: Github,
@@ -12,13 +9,8 @@ const iconMap = {
 };
 
 export function Footer() {
-  const { ref } = useScrollAnimation({ threshold: 0.1 });
-
   return (
-    <footer
-      ref={ref}
-      className="border-t border-white/[0.04] py-12"
-    >
+    <footer className="border-t border-white/[0.04] py-12">
       <Container>
         <div className="flex flex-col items-center gap-8">
           <div className="flex items-center gap-5">
