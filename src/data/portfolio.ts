@@ -6,7 +6,7 @@ export const personalInfo: PersonalInfo = {
   email: "yuvrajsinghnegi001@gmail.com",
   phone: "+91 70889 32008",
   location: "Uttarakhand, India",
-  linkedin: "Yuvraj Singh Negi",
+  linkedin: "https://www.linkedin.com/in/yuvraj-singh-negi-992a3b375/",
   github: "https://github.com/yuvraj001q",
   website: "https://yuvrajsinghnegi.dev",
 };
@@ -39,7 +39,7 @@ export const socialLinks: SocialLink[] = [
   },
   {
     label: "LinkedIn",
-    href: `https://linkedin.com/in/${personalInfo.linkedin.replace(/\s+/g, "").toLowerCase()}`,
+    href: personalInfo.linkedin,
     icon: "linkedin",
   },
   {

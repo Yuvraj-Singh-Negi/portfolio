@@ -11,19 +11,6 @@ interface ProjectCardProps {
   index: number;
 }
 
-function tryLoadImage(urls: string[]): Promise<string | null> {
-  const tryNext = (i: number): Promise<string | null> => {
-    if (i >= urls.length) return Promise.resolve(null);
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(urls[i]!);
-      img.onerror = () => tryNext(i + 1).then((v) => resolve(v));
-      img.src = urls[i]!;
-    });
-  };
-  return tryNext(0);
-}
-
 export function ProjectCard({ project, index }: ProjectCardProps) {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [imgError, setImgError] = useState(true);
@@ -35,36 +22,21 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     if (fetched.current) return;
     fetched.current = true;
 
-    const base = project.liveUrl.replace(/\/$/, "");
-
-    const urls = [
-      `${base}/api/og`,
-      `${base}/og-image.png`,
-      `${base}/opengraph-image.png`,
-    ];
-
-    tryLoadImage(urls).then((url) => {
-      if (url) {
-        setImgSrc(url);
-        setImgError(false);
-      } else {
-        fetch(
-          `https://api.microlink.io/?url=${encodeURIComponent(project.liveUrl)}&screenshot=true&meta=false`
-        )
-          .then((r) => r.json())
-          .then((data) => {
-            const src =
-              data?.data?.image?.url ||
-              data?.data?.logo?.url ||
-              data?.data?.screenshot?.url;
-            if (src) {
-              setImgSrc(src);
-              setImgError(false);
-            }
-          })
-          .catch(() => {});
-      }
-    });
+    fetch(
+      `https://api.microlink.io/?url=${encodeURIComponent(project.liveUrl)}&screenshot=true&meta=false`
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        const src =
+          data?.data?.image?.url ||
+          data?.data?.logo?.url ||
+          data?.data?.screenshot?.url;
+        if (src) {
+          setImgSrc(src);
+          setImgError(false);
+        }
+      })
+      .catch(() => {});
   }, [project.liveUrl]);
 
   return (
