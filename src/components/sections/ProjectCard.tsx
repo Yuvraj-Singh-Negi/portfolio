@@ -4,23 +4,34 @@ import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types/portfolio";
 import { ProjectPlaceholder } from "@/components/sections/ProjectPlaceholder";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ProjectCardProps {
   project: Project;
   index: number;
 }
 
-function getScreenshotUrl(liveUrl: string): string {
-  const url = encodeURIComponent(liveUrl);
-  return `https://v1.screenshot.11ty.dev/${url}/opengraph/`;
+function getOgImageUrl(liveUrl: string): string {
+  const base = liveUrl.replace(/\/$/, "");
+  return `${base}/api/og`;
 }
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
   const delay = Math.min(index * 1 + 1, 5);
   const ref = useScrollReveal({ delay });
-  const screenshotUrl = getScreenshotUrl(project.liveUrl);
+  const fetched = useRef(false);
+
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    const url = getOgImageUrl(project.liveUrl);
+    const img = new Image();
+    img.onload = () => setImgSrc(url);
+    img.onerror = () => setImgError(true);
+    img.src = url;
+  }, [project.liveUrl]);
 
   return (
     <div ref={ref} className={`reveal reveal-delay-${delay}`}>
@@ -34,15 +45,14 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         >
           <div className="overflow-hidden">
             <div className="origin-center transition-transform duration-700 ease-out group-hover:scale-105">
-              {imgError ? (
+              {imgError || !imgSrc ? (
                 <ProjectPlaceholder title={project.title} index={index} />
               ) : (
                 <img
-                  src={screenshotUrl}
+                  src={imgSrc}
                   alt={`Screenshot of ${project.title}`}
                   className="aspect-[16/10] w-full object-cover"
                   onError={() => setImgError(true)}
-                  loading="lazy"
                 />
               )}
             </div>
