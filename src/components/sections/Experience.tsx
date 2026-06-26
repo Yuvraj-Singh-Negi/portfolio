@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { fadeUp, staggerContainer, easeOutExpo } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useIsClient } from "@/hooks/useIsClient";
 
 interface TimelineEntry {
   date: string;
@@ -38,6 +39,12 @@ const entries: TimelineEntry[] = [
 ];
 
 function TimelineLine({ isVisible }: { isVisible: boolean }) {
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return <div className="absolute left-[11px] top-0 bottom-0 w-px bg-white/[0.06]" />;
+  }
+
   return (
     <div className="absolute left-[11px] top-0 bottom-0 w-px overflow-hidden">
       <motion.div
@@ -51,6 +58,18 @@ function TimelineLine({ isVisible }: { isVisible: boolean }) {
 }
 
 function TimelineDot({ delay }: { delay: number }) {
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return (
+      <div className="absolute left-0 top-1">
+        <div className="h-[23px] w-[23px] rounded-full border-2 border-white/[0.12] bg-[#050505] flex items-center justify-center">
+          <div className="h-[7px] w-[7px] rounded-full bg-white/[0.15]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       className="absolute left-0 top-1"
@@ -66,20 +85,12 @@ function TimelineDot({ delay }: { delay: number }) {
   );
 }
 
-function TimelineCard({ entry, index }: { entry: TimelineEntry; index: number }) {
+function TimelineCard({ entry, index, isClient }: { entry: TimelineEntry; index: number; isClient: boolean }) {
   const { ref, isVisible } = useScrollAnimation();
 
-  return (
-    <motion.div
-      ref={ref}
-      className="relative pl-12 pb-16 last:pb-0"
-      variants={fadeUp}
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      transition={{ ...easeOutExpo, delay: index * 0.15 }}
-    >
+  const content = (
+    <div className="relative pl-12 pb-16 last:pb-0">
       <TimelineDot delay={index * 0.15} />
-
       <div className="space-y-2">
         <span className="block text-tiny tracking-[0.12em] text-zinc-600 uppercase">
           {entry.date}
@@ -92,11 +103,28 @@ function TimelineCard({ entry, index }: { entry: TimelineEntry; index: number })
           {entry.description}
         </p>
       </div>
+    </div>
+  );
+
+  if (!isClient) {
+    return <div ref={ref}>{content}</div>;
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      variants={fadeUp}
+      initial="hidden"
+      animate={isVisible ? "visible" : "hidden"}
+      transition={{ ...easeOutExpo, delay: index * 0.15 }}
+    >
+      {content}
     </motion.div>
   );
 }
 
 export function Experience() {
+  const isClient = useIsClient();
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
 
   return (
@@ -109,18 +137,27 @@ export function Experience() {
       </Container>
 
       <Container>
-        <motion.div
-          ref={ref}
-          className="relative mx-auto max-w-2xl"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
-        >
-          <TimelineLine isVisible={isVisible} />
-          {entries.map((entry, index) => (
-            <TimelineCard key={entry.title} entry={entry} index={index} />
-          ))}
-        </motion.div>
+        {isClient ? (
+          <motion.div
+            ref={ref}
+            className="relative mx-auto max-w-2xl"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isVisible ? "visible" : "hidden"}
+          >
+            <TimelineLine isVisible={isVisible} />
+            {entries.map((entry, index) => (
+              <TimelineCard key={entry.title} entry={entry} index={index} isClient={true} />
+            ))}
+          </motion.div>
+        ) : (
+          <div className="relative mx-auto max-w-2xl">
+            <TimelineLine isVisible={false} />
+            {entries.map((entry, index) => (
+              <TimelineCard key={entry.title} entry={entry} index={index} isClient={false} />
+            ))}
+          </div>
+        )}
       </Container>
     </section>
   );

@@ -7,8 +7,10 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectCard } from "@/components/sections/ProjectCard";
 import { staggerContainer } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export function FeaturedProjects() {
+  const isClient = useIsClient();
   const { ref, isVisible } = useScrollAnimation();
 
   const sorted = [...projects].sort((a, b) => {
@@ -27,17 +29,25 @@ export function FeaturedProjects() {
       </Container>
 
       <Container>
-        <motion.div
-          ref={ref}
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
-        >
-          {sorted.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
-          ))}
-        </motion.div>
+        {isClient ? (
+          <motion.div
+            ref={ref}
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isVisible ? "visible" : "hidden"}
+          >
+            {sorted.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} isClient={true} />
+            ))}
+          </motion.div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {sorted.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))}
+          </div>
+        )}
       </Container>
     </section>
   );

@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { staggerContainer } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useIsClient } from "@/hooks/useIsClient";
 
 function MarqueeRow({
   items,
@@ -15,8 +16,8 @@ function MarqueeRow({
   reverse?: boolean;
 }) {
   return (
-    <div className="relative flex overflow-hidden mask-fade">
-      <motion.div
+    <div className="relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]">
+      <div
         className={`flex shrink-0 gap-3 ${reverse ? "animate-marquee-reverse" : "animate-marquee"}`}
         aria-hidden="true"
       >
@@ -28,12 +29,13 @@ function MarqueeRow({
             {skill.name}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
 
 export function Skills() {
+  const isClient = useIsClient();
   const { ref, isVisible } = useScrollAnimation();
   const mid = Math.ceil(skills.length / 2);
   const row1 = skills.slice(0, mid);
@@ -49,35 +51,23 @@ export function Skills() {
       </Container>
 
       <div ref={ref}>
-        <motion.div
-          className="space-y-3"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
-        >
-          <MarqueeRow items={row1} />
-          <MarqueeRow items={row2} reverse />
-        </motion.div>
+        {isClient ? (
+          <motion.div
+            className="space-y-3"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isVisible ? "visible" : "hidden"}
+          >
+            <MarqueeRow items={row1} />
+            <MarqueeRow items={row2} reverse />
+          </motion.div>
+        ) : (
+          <div className="space-y-3">
+            <MarqueeRow items={row1} />
+            <MarqueeRow items={row2} reverse />
+          </div>
+        )}
       </div>
-
-      <style jsx>{`
-        .mask-fade {
-          mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            black 5%,
-            black 95%,
-            transparent 100%
-          );
-          -webkit-mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            black 5%,
-            black 95%,
-            transparent 100%
-          );
-        }
-      `}</style>
     </section>
   );
 }

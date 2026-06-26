@@ -1,10 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { personalInfo, socialLinks } from "@/data/portfolio";
 import { Container } from "@/components/layout/Container";
-import { fadeUp, staggerContainer, easeOutExpo } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const iconMap = {
@@ -14,19 +12,16 @@ const iconMap = {
 };
 
 export function Footer() {
-  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { ref } = useScrollAnimation({ threshold: 0.1 });
 
   return (
-    <motion.footer
+    <footer
       ref={ref}
       className="border-t border-white/[0.04] py-12"
-      variants={staggerContainer}
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
     >
       <Container>
         <div className="flex flex-col items-center gap-8">
-          <motion.div className="flex items-center gap-5" variants={fadeUp} transition={easeOutExpo}>
+          <div className="flex items-center gap-5">
             {socialLinks.map((link) => {
               const Icon = iconMap[link.icon as keyof typeof iconMap];
               return (
@@ -42,22 +37,18 @@ export function Footer() {
                 </a>
               );
             })}
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="flex flex-col items-center gap-1 text-center"
-            variants={fadeUp}
-            transition={{ ...easeOutExpo, delay: 0.1 }}
-          >
+          <div className="flex flex-col items-center gap-1 text-center">
             <p className="text-small text-zinc-600">
               &copy; {new Date().getFullYear()} {personalInfo.name}
             </p>
             <p className="text-xs text-zinc-700">
               Built with Next.js &amp; Tailwind CSS
             </p>
-          </motion.div>
+          </div>
         </div>
       </Container>
-    </motion.footer>
+    </footer>
   );
 }
