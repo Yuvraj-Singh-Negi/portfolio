@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
+import { SkipLink } from "@/components/layout/SkipLink";
+import { JsonLd } from "@/components/layout/JsonLd";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,9 +34,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <JsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#050505] text-zinc-100`}
       >
+        <SkipLink />
         <div className="noise-overlay fixed inset-0 z-[9999]" aria-hidden="true" />
         {children}
       </body>
