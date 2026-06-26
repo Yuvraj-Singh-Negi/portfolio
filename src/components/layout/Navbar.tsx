@@ -1,26 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/data/portfolio";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-function useActiveSection(sectionIds: string[]) {
+function useActiveSection() {
   const [active, setActive] = useState("");
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   useEffect(() => {
+    const ids = navLinks.map((l) => l.href.replace("#", ""));
+    const visible = new Map<string, boolean>();
     const observers: IntersectionObserver[] = [];
 
-    sectionIds.forEach((id) => {
+    ids.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
+      visible.set(id, false);
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry?.isIntersecting) setActive(id);
+          if (entry) {
+            visible.set(id, entry.isIntersecting);
+            if (entry.isIntersecting) {
+              setActive(id);
+            } else if (id === activeRef.current) {
+              const stillVisible = [...visible.entries()].some(([, v]) => v);
+              if (!stillVisible) setActive("");
+            }
+          }
         },
-        { threshold: 0.3, rootMargin: "-80px 0px 0px 0px" }
+        { threshold: 0.2, rootMargin: "-80px 0px 0px 0px" }
       );
 
       observer.observe(el);
@@ -28,7 +41,7 @@ function useActiveSection(sectionIds: string[]) {
     });
 
     return () => observers.forEach((o) => o.disconnect());
-  }, [sectionIds]);
+  }, []);
 
   return active;
 }
@@ -37,8 +50,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isScrolled } = useScrollPosition();
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
-  const activeSection = useActiveSection(sectionIds);
+  const activeSection = useActiveSection();
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
