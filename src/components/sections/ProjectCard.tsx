@@ -4,15 +4,23 @@ import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types/portfolio";
 import { ProjectPlaceholder } from "@/components/sections/ProjectPlaceholder";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useState } from "react";
 
 interface ProjectCardProps {
   project: Project;
   index: number;
 }
 
+function getScreenshotUrl(liveUrl: string): string {
+  const url = encodeURIComponent(liveUrl);
+  return `https://v1.screenshot.11ty.dev/${url}/opengraph/`;
+}
+
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  const [imgError, setImgError] = useState(false);
   const delay = Math.min(index * 1 + 1, 5);
   const ref = useScrollReveal({ delay });
+  const screenshotUrl = getScreenshotUrl(project.liveUrl);
 
   return (
     <div ref={ref} className={`reveal reveal-delay-${delay}`}>
@@ -26,7 +34,17 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         >
           <div className="overflow-hidden">
             <div className="origin-center transition-transform duration-700 ease-out group-hover:scale-105">
-              <ProjectPlaceholder title={project.title} index={index} />
+              {imgError ? (
+                <ProjectPlaceholder title={project.title} index={index} />
+              ) : (
+                <img
+                  src={screenshotUrl}
+                  alt={`Screenshot of ${project.title}`}
+                  className="aspect-[16/10] w-full object-cover"
+                  onError={() => setImgError(true)}
+                  loading="lazy"
+                />
+              )}
             </div>
           </div>
 
@@ -37,7 +55,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           </div>
 
           <div className="relative z-10 space-y-3 p-5">
-            <h3 className="text-base font-semibold tracking-tight text-zinc-100 transition-colors duration-300 group-hover:text-zinc-50">
+            <h3 className="font-serif text-base font-semibold tracking-tight text-zinc-100 transition-colors duration-300 group-hover:text-zinc-50">
               {project.title}
             </h3>
             <p className="line-clamp-2 text-small leading-relaxed text-zinc-500 transition-colors duration-300 group-hover:text-zinc-400">

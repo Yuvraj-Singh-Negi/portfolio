@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
-import { navLinks } from "@/data/portfolio";
+import { navLinks, personalInfo } from "@/data/portfolio";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
@@ -81,10 +81,10 @@ export function Navbar() {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="text-sm font-medium tracking-tight text-zinc-300 transition-colors hover:text-zinc-100"
+            className="font-display text-sm font-semibold tracking-tight text-zinc-300 transition-colors hover:text-zinc-100"
             aria-label="Go to top"
           >
-            YSN
+            {personalInfo.name}
           </a>
 
           <div className="hidden items-center gap-8 md:flex">

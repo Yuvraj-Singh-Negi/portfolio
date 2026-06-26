@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowDown } from "lucide-react";
 import { personalInfo } from "@/data/portfolio";
 import { AnimatedOrbs } from "@/components/sections/AnimatedOrbs";
 
@@ -18,15 +17,15 @@ export function Hero() {
         <div className="grid min-h-dvh items-center gap-12 pt-24 pb-16 lg:grid-cols-2">
           {/* Content */}
           <div className="flex flex-col gap-6">
-            <p className="animate-hero-location text-tiny tracking-[0.15em] text-zinc-600 uppercase">
+            <p className="animate-hero-location font-display text-tiny tracking-[0.15em] text-zinc-600 uppercase">
               {personalInfo.location}
             </p>
 
-            <h1 className="animate-hero-heading text-hero text-zinc-100">
+            <h1 className="animate-hero-heading font-display text-hero text-zinc-100">
               {personalInfo.name}
             </h1>
 
-            <p className="animate-hero-title text-subtitle text-gradient-white max-w-lg">
+            <p className="animate-hero-title font-serif text-subtitle text-gradient-white max-w-lg">
               {personalInfo.title}
             </p>
 
@@ -56,10 +55,10 @@ export function Hero() {
 
           {/* Visual */}
           <div className="animate-hero-visual hidden items-center justify-center lg:flex">
-            <div className="relative flex h-[420px] w-[420px] items-center justify-center">
-              <div className="absolute h-[360px] w-[360px] rounded-full border border-white/[0.06]" />
-              <div className="absolute h-[280px] w-[280px] rounded-full border border-white/[0.04]" />
-              <div className="animate-hero-ring absolute h-[200px] w-[200px] overflow-hidden rounded-full border border-white/[0.08]" style={{ animationDelay: "1s" }}>
+            <div className="relative flex h-[520px] w-[520px] items-center justify-center">
+              <div className="absolute h-[460px] w-[460px] rounded-full border border-white/[0.06]" />
+              <div className="absolute h-[380px] w-[380px] rounded-full border border-white/[0.04]" />
+              <div className="animate-hero-ring absolute h-[300px] w-[300px] overflow-hidden rounded-full border border-white/[0.08]" style={{ animationDelay: "1s" }}>
                 <img
                   src="/profile.png"
                   alt={personalInfo.name}
@@ -69,10 +68,6 @@ export function Hero() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="animate-hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2">
-        <ArrowDown className="h-4 w-4 text-zinc-700" />
       </div>
     </section>
   );

@@ -1,20 +1,29 @@
 import type { Metadata } from "next";
+import { Outfit, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { JsonLd } from "@/components/layout/JsonLd";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const outfit = Outfit({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+  preload: true,
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   preload: true,
 });
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   weight: "100 900",
   display: "swap",
   preload: true,
@@ -38,7 +47,7 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#050505] text-zinc-100`}
+        className={`${outfit.variable} ${playfair.variable} ${geistMono.variable} font-serif antialiased bg-[#050505] text-zinc-100`}
       >
         <SkipLink />
         <div className="noise-overlay fixed inset-0 z-[9999]" aria-hidden="true" />
