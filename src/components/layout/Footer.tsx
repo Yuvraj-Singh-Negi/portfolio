@@ -10,7 +10,7 @@ const iconMap = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.04] py-12">
+    <footer className="border-t border-white/[0.04] py-8 sm:py-12">
       <Container>
         <div className="flex flex-col items-center gap-8">
           <div className="flex items-center gap-5">

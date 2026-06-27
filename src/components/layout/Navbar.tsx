@@ -125,33 +125,35 @@ export function Navbar() {
           </button>
         </nav>
 
-        {mobileOpen && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#050505]/95 backdrop-blur-xl md:hidden">
-            <nav className="flex flex-col items-center gap-8" aria-label="Mobile navigation">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
-                  className={`text-2xl tracking-tight transition-colors ${
-                    activeSection === link.href.replace("#", "")
-                      ? "text-zinc-100"
-                      : "text-zinc-500 hover:text-zinc-300"
-                  }`}
-                >
-                  {link.label}
-                </a>
-              ))}
+        <div
+          className={`fixed inset-0 z-40 flex items-center justify-center bg-[#050505]/95 backdrop-blur-xl transition-opacity duration-300 md:hidden ${
+            mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          <nav className="flex flex-col items-center gap-10" aria-label="Mobile navigation">
+            {navLinks.map((link) => (
               <a
-                href="#contact"
-                onClick={(e) => handleScroll(e, "#contact")}
-                className="mt-4 inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-8 text-sm text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleScroll(e, link.href)}
+                className={`text-2xl tracking-tight transition-colors py-2 ${
+                  activeSection === link.href.replace("#", "")
+                    ? "text-zinc-100"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
               >
-                Let&apos;s Talk
+                {link.label}
               </a>
-            </nav>
-          </div>
-        )}
+            ))}
+            <a
+              href="#contact"
+              onClick={(e) => handleScroll(e, "#contact")}
+              className="mt-2 inline-flex h-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-10 text-sm text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+            >
+              Let&apos;s Talk
+            </a>
+          </nav>
+        </div>
       </header>
     </>
   );

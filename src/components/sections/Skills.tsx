@@ -36,7 +36,7 @@ export function Skills() {
   const row2 = skills.slice(mid);
 
   return (
-    <section id="skills" className="py-32" aria-label="Technologies and tools">
+    <section id="skills" className="py-20 md:py-32" aria-label="Technologies and tools">
       <Container>
         <SectionHeading
           title="Technologies"

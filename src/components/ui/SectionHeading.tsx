@@ -14,7 +14,7 @@ export function SectionHeading({
   className = "",
 }: SectionHeadingProps) {
   return (
-    <div className={`mb-16 ${className}`}>
+    <div className={`mb-10 md:mb-16 ${className}`}>
       <TextReveal as="h2" className="text-section mb-4 text-zinc-100">
         {title}
       </TextReveal>

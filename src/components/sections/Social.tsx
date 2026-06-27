@@ -12,7 +12,7 @@ const iconMap = {
 
 export function Social() {
   return (
-    <section className="pb-24" aria-label="Social links">
+    <section className="pb-16 sm:pb-24" aria-label="Social links">
       <Container>
         <div className="flex items-center justify-center gap-4">
           {socialLinks.map((link) => {

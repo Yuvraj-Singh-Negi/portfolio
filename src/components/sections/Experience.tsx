@@ -40,10 +40,10 @@ function TimelineCard({ entry, index }: { entry: TimelineEntry; index: number })
   const ref = useScrollReveal({ delay });
 
   return (
-    <div ref={ref} className={`reveal reveal-delay-${delay} relative pl-12 pb-16 last:pb-0`}>
+    <div ref={ref} className={`reveal reveal-delay-${delay} relative pl-10 sm:pl-12 pb-10 md:pb-16 last:pb-0`}>
       <div className="absolute left-0 top-1">
-        <div className="h-[23px] w-[23px] rounded-full border-2 border-white/[0.12] bg-[#050505] flex items-center justify-center">
-          <div className="h-[7px] w-[7px] rounded-full bg-white/[0.15]" />
+        <div className="h-5 w-5 sm:h-[23px] sm:w-[23px] rounded-full border-2 border-white/[0.12] bg-[#050505] flex items-center justify-center">
+          <div className="h-[5px] w-[5px] sm:h-[7px] sm:w-[7px] rounded-full bg-white/[0.15]" />
         </div>
       </div>
       <div className="space-y-2">
@@ -64,7 +64,7 @@ function TimelineCard({ entry, index }: { entry: TimelineEntry; index: number })
 
 export function Experience() {
   return (
-    <section id="experience" className="py-32" aria-label="Experience and education">
+    <section id="experience" className="py-20 md:py-32" aria-label="Experience and education">
       <Container>
         <SectionHeading
           title="Experience"

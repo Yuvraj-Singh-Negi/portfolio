@@ -70,7 +70,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             <ArrowUpRight className="h-3.5 w-3.5 text-zinc-400" />
           </div>
 
-          <div className="relative z-10 space-y-3 p-5">
+          <div className="relative z-10 space-y-3 p-4 sm:p-5">
             <h3 className="font-serif text-base font-semibold tracking-tight text-zinc-100 transition-colors duration-300 group-hover:text-zinc-50">
               {project.title}
             </h3>

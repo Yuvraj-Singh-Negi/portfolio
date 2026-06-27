@@ -39,7 +39,7 @@ function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8"
+      className="space-y-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-8"
       noValidate
     >
       <div className="space-y-2">
@@ -123,7 +123,7 @@ export function Contact() {
   const ref = useScrollReveal();
 
   return (
-    <section id="contact" className="py-32" aria-label="Contact">
+    <section id="contact" className="py-20 md:py-32" aria-label="Contact">
       <Container>
         <SectionHeading
           title="Get in Touch"

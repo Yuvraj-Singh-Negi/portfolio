@@ -14,14 +14,14 @@ export function Hero() {
       <AnimatedOrbs />
 
       <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10">
-        <div className="grid min-h-dvh items-center gap-12 pt-24 pb-16 lg:grid-cols-2">
+        <div className="flex min-h-dvh flex-col items-center gap-8 pt-24 pb-16 lg:grid lg:grid-cols-2 lg:gap-12">
           {/* Content */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 order-2 lg:order-1">
             <p className="animate-hero-location font-display text-tiny tracking-[0.15em] text-zinc-600 uppercase">
               {personalInfo.location}
             </p>
 
-            <h1 className="animate-hero-heading font-display text-hero text-zinc-100">
+            <h1 className="animate-hero-heading font-display text-hero text-zinc-100 max-w-[6ch]">
               {personalInfo.name}
             </h1>
 
@@ -54,11 +54,11 @@ export function Hero() {
           </div>
 
           {/* Visual */}
-          <div className="animate-hero-visual hidden items-center justify-center lg:flex">
-            <div className="relative flex h-[520px] w-[520px] items-center justify-center">
-              <div className="absolute h-[460px] w-[460px] rounded-full border border-white/[0.06]" />
-              <div className="absolute h-[380px] w-[380px] rounded-full border border-white/[0.04]" />
-              <div className="animate-hero-ring absolute h-[300px] w-[300px] overflow-hidden rounded-full border border-white/[0.08]" style={{ animationDelay: "1s" }}>
+          <div className="animate-hero-visual order-1 flex items-center justify-center lg:order-2">
+            <div className="relative flex h-[200px] w-[200px] items-center justify-center sm:h-[280px] sm:w-[280px] lg:h-[520px] lg:w-[520px]">
+              <div className="absolute h-[170px] w-[170px] rounded-full border border-white/[0.06] sm:h-[240px] sm:w-[240px] lg:h-[460px] lg:w-[460px]" />
+              <div className="absolute h-[140px] w-[140px] rounded-full border border-white/[0.04] sm:h-[200px] sm:w-[200px] lg:h-[380px] lg:w-[380px]" />
+              <div className="animate-hero-ring absolute h-[100px] w-[100px] overflow-hidden rounded-full border border-white/[0.08] sm:h-[150px] sm:w-[150px] lg:h-[300px] lg:w-[300px]" style={{ animationDelay: "1s" }}>
                 <img
                   src="/profile.png"
                   alt={personalInfo.name}
