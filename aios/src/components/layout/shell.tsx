@@ -18,6 +18,7 @@ export function Shell({ children, title }: ShellProps) {
     if (typeof window === "undefined") return false;
     return !sessionStorage.getItem("aios-booted");
   });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
   const handleBootComplete = () => {
@@ -32,9 +33,9 @@ export function Shell({ children, title }: ShellProps) {
       <NeuralNetwork />
 
       <div className="flex h-screen relative z-10">
-        <Sidebar />
-        <div className="ml-[var(--sidebar-width)] flex flex-1 flex-col">
-          <Topbar title={title} />
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex flex-1 flex-col lg:ml-[var(--sidebar-width)]">
+          <Topbar title={title} onMenuClick={() => setSidebarOpen(true)} />
           <main className="flex-1 overflow-y-auto pt-[var(--topbar-height)]">
             <PageTransition key={pathname}>{children}</PageTransition>
           </main>

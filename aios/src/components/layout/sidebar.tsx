@@ -2,24 +2,37 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigation, findNavItem } from "./navigation";
 
-export function Sidebar() {
-  const pathname = usePathname();
-  const activeItem = findNavItem(pathname);
+interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-  return (
-    <aside className="fixed left-0 top-0 z-30 flex h-screen w-[var(--sidebar-width)] flex-col border-r border-border bg-background">
-      <div className="flex h-[var(--topbar-height)] items-center gap-2.5 border-b border-border px-5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-green">
-          <span className="text-[11px] font-bold text-black">A</span>
+export function Sidebar({ open, onClose }: SidebarProps) {
+  const pathname = usePathname();
+
+  const sidebar = (
+    <aside className="flex h-full w-[var(--sidebar-width)] flex-col border-r border-border bg-background">
+      <div className="flex h-[var(--topbar-height)] items-center justify-between gap-2.5 border-b border-border px-5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-green">
+            <span className="text-[11px] font-bold text-black">A</span>
+          </div>
+          <span className="text-sm font-semibold tracking-tight">AIOS</span>
+          <span className="rounded bg-accent-green/10 px-1.5 py-0.5 text-[10px] font-medium text-accent-green">
+            v0.1
+          </span>
         </div>
-        <span className="text-sm font-semibold tracking-tight">AIOS</span>
-        <span className="rounded bg-accent-green/10 px-1.5 py-0.5 text-[10px] font-medium text-accent-green">
-          v0.1
-        </span>
+        <button
+          onClick={onClose}
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-elevation-2 lg:hidden"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -36,6 +49,7 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={onClose}
                     className={cn(
                       "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       isActive
@@ -80,5 +94,37 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar - always visible */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex">{sidebar}</div>
+
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              onClick={onClose}
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed inset-y-0 left-0 z-50 lg:hidden"
+            >
+              {sidebar}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -1,25 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, Command, Bot, GitBranch, Target, Moon, Sun } from "lucide-react";
+import { Menu, Search, Command, Bot, GitBranch, Target, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { CommandPalette } from "./command-palette";
+import { Notifications } from "./notifications";
 
 interface TopbarProps {
   title?: string;
+  onMenuClick?: () => void;
 }
 
-export function Topbar({ title }: TopbarProps) {
+export function Topbar({ title, onMenuClick }: TopbarProps) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   return (
     <>
-      <header
-        className="fixed right-0 top-0 z-20 flex h-[var(--topbar-height)] items-center gap-3 border-b border-border bg-background px-4"
-        style={{ left: "var(--sidebar-width)" }}
-      >
+      <header className="flex h-[var(--topbar-height)] items-center gap-3 border-b border-border bg-background px-4 lg:fixed lg:right-0 lg:top-0 lg:z-20 lg:ml-[var(--sidebar-width)]">
+        <button
+          onClick={onMenuClick}
+          className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-elevation-2 lg:hidden"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
         <div className="flex-1">
           {title && <h1 className="text-sm font-semibold tracking-tight">{title}</h1>}
         </div>
@@ -65,10 +70,7 @@ export function Topbar({ title }: TopbarProps) {
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          <button className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-elevation-2">
-            <Bell className="h-4 w-4" />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent-green shadow-[0_0_6px_rgba(34,211,160,0.5)]" />
-          </button>
+          <Notifications />
         </div>
       </header>
 
