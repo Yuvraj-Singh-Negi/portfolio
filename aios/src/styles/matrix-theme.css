@@ -1,0 +1,54 @@
+/* Matrix Mode — Enhanced emerald theme */
+
+.matrix-theme {
+  --background: #000a04;
+  --foreground: #cce8d4;
+  --muted: #7aa884;
+  --muted-foreground: #4a7a54;
+  --card: #040e08;
+  --card-border: #0a2a14;
+  --card-hover: #081a0c;
+  --border: #0e2e18;
+  --border-light: #1a4a24;
+  --input: #0a1a0e;
+  --ring: #22d3a0;
+
+  --accent-green: #22d3a0;
+  --accent-green-dim: #1a9e78;
+  --accent-cyan: #22d3ee;
+  --accent-blue: #3b82f6;
+  --accent-purple: #a855f7;
+  --accent-red: #ef4444;
+  --accent-amber: #f59e0b;
+
+  --elevation-1: #040e08;
+  --elevation-2: #081a0c;
+  --elevation-3: #0c2610;
+  --elevation-4: #103214;
+
+  --glass-bg: rgba(4, 14, 8, 0.85);
+  --glass-border: rgba(34, 211, 160, 0.08);
+  --glass-highlight: rgba(34, 211, 160, 0.04);
+
+  --shadow-glow-green: 0 0 24px rgba(34, 211, 160, 0.2);
+  --shadow-glow-purple: 0 0 24px rgba(168, 85, 247, 0.15);
+  --shadow-glow-blue: 0 0 24px rgba(59, 130, 246, 0.15);
+}
+
+.matrix-theme .glass {
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.matrix-theme ::selection {
+  background: rgba(34, 211, 160, 0.3);
+  color: var(--foreground);
+}
+
+.matrix-theme ::-webkit-scrollbar-thumb {
+  background: var(--accent-green);
+  opacity: 0.3;
+}
+
+.matrix-theme .glow-green {
+  box-shadow: 0 0 30px rgba(34, 211, 160, 0.25), 0 0 60px rgba(34, 211, 160, 0.1);
+}
