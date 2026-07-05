@@ -22,6 +22,7 @@ export default function SignUpPage() {
         email,
         password,
         name,
+        callbackURL: "/dashboard",
       });
 
       if (signUpError) {
@@ -30,7 +31,8 @@ export default function SignUpPage() {
         return;
       }
 
-      router.push("/dashboard");
+      setLoading(false);
+      window.location.href = "/dashboard";
     } catch (err) {
       setError("Connection error. Check that the server is running and DATABASE_URL is set.");
       setLoading(false);

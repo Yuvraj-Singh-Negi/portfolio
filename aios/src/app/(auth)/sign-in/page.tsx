@@ -20,6 +20,7 @@ export default function SignInPage() {
       const { error: signInError } = await authClient.signIn.email({
         email,
         password,
+        callbackURL: "/dashboard",
       });
 
       if (signInError) {
@@ -28,7 +29,8 @@ export default function SignInPage() {
         return;
       }
 
-      router.push("/dashboard");
+      setLoading(false);
+      window.location.href = "/dashboard";
     } catch (err) {
       setError("Connection error. Check that the server is running and DATABASE_URL is set.");
       setLoading(false);
