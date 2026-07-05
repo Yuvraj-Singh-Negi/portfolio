@@ -16,29 +16,39 @@ export default function SignInPage() {
     setLoading(true);
     setError("");
 
-    const { error: signInError } = await authClient.signIn.email({
-      email,
-      password,
-    });
+    try {
+      const { error: signInError } = await authClient.signIn.email({
+        email,
+        password,
+      });
 
-    if (signInError) {
-      setError(signInError.message || "Failed to sign in");
+      if (signInError) {
+        setError(signInError.message || "Failed to sign in");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Connection error. Check that the server is running and DATABASE_URL is set.");
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
   };
 
   const handleGithubSignIn = async () => {
     setLoading(true);
     setError("");
-    const { error: signInError } = await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/dashboard",
-    });
-    if (signInError) {
-      setError(signInError.message || "GitHub sign in failed");
+    try {
+      const { error: signInError } = await authClient.signIn.social({
+        provider: "github",
+        callbackURL: "/dashboard",
+      });
+      if (signInError) {
+        setError(signInError.message || "GitHub sign in failed");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("GitHub sign in failed. Check that OAuth credentials are configured.");
       setLoading(false);
     }
   };
@@ -46,12 +56,17 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError("");
-    const { error: signInError } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-    });
-    if (signInError) {
-      setError(signInError.message || "Google sign in failed");
+    try {
+      const { error: signInError } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+      if (signInError) {
+        setError(signInError.message || "Google sign in failed");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("Google sign in failed. Check that OAuth credentials are configured.");
       setLoading(false);
     }
   };

@@ -17,30 +17,40 @@ export default function SignUpPage() {
     setLoading(true);
     setError("");
 
-    const { error: signUpError } = await authClient.signUp.email({
-      email,
-      password,
-      name,
-    });
+    try {
+      const { error: signUpError } = await authClient.signUp.email({
+        email,
+        password,
+        name,
+      });
 
-    if (signUpError) {
-      setError(signUpError.message || "Failed to sign up");
+      if (signUpError) {
+        setError(signUpError.message || "Failed to sign up");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Connection error. Check that the server is running and DATABASE_URL is set.");
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
   };
 
   const handleGithubSignUp = async () => {
     setLoading(true);
     setError("");
-    const { error: signInError } = await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/dashboard",
-    });
-    if (signInError) {
-      setError(signInError.message || "GitHub sign up failed");
+    try {
+      const { error: signInError } = await authClient.signIn.social({
+        provider: "github",
+        callbackURL: "/dashboard",
+      });
+      if (signInError) {
+        setError(signInError.message || "GitHub sign up failed");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("GitHub sign up failed. Check that OAuth credentials are configured.");
       setLoading(false);
     }
   };
@@ -48,12 +58,17 @@ export default function SignUpPage() {
   const handleGoogleSignUp = async () => {
     setLoading(true);
     setError("");
-    const { error: signInError } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-    });
-    if (signInError) {
-      setError(signInError.message || "Google sign up failed");
+    try {
+      const { error: signInError } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+      if (signInError) {
+        setError(signInError.message || "Google sign up failed");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("Google sign up failed. Check that OAuth credentials are configured.");
       setLoading(false);
     }
   };
