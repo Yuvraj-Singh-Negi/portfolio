@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run db:migrate && next build --webpack",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
+}
