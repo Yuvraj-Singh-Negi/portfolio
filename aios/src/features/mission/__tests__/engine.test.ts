@@ -6,7 +6,18 @@ import {
   canTransition,
   getMissionCategory,
   generateDailyTimeline,
+  generateTaskBreakdown,
+  calculateAdaptiveDifficulty,
+  calculateRewards,
+  getStreakLabel,
 } from "../engine";
+import type {
+  MissionType,
+  MissionState,
+  MissionPriority,
+  MissionAnalytics,
+  Difficulty,
+} from "../types";
 
 describe("Mission Engine", () => {
   describe("generateMissionId", () => {
@@ -88,6 +99,122 @@ describe("Mission Engine", () => {
       expect(types).toContain("deep-work");
       expect(types).toContain("coding");
       expect(types).toContain("reflection");
+    });
+  });
+
+  describe("generateTaskBreakdown", () => {
+    it("returns tasks for a given mission type", () => {
+      const tasks = generateTaskBreakdown("coding");
+      expect(tasks).toHaveLength(4);
+      expect(tasks[0]).toHaveProperty("id");
+      expect(tasks[0]).toHaveProperty("label");
+      expect(tasks[0]).toHaveProperty("duration");
+      expect(tasks[0].done).toBe(false);
+    });
+
+    it("returns default tasks for unknown type", () => {
+      const tasks = generateTaskBreakdown("learning" as MissionType);
+      expect(tasks).toHaveLength(4);
+    });
+  });
+
+  describe("calculateAdaptiveDifficulty", () => {
+    it("returns beginner with no history", () => {
+      const result = calculateAdaptiveDifficulty([], "coding");
+      expect(result.recommended).toBe("beginner");
+    });
+
+    it("recommends expert for high performers", () => {
+      const analytics: MissionAnalytics[] = [
+        {
+          completionTime: 20,
+          estimatedTime: 40,
+          difficulty: "advanced",
+          focusScore: 90,
+          distractions: 0,
+          resourcesUsed: [],
+          aiAssistance: 0,
+          gitCommits: 0,
+          knowledgeGained: [],
+          reflectionQuality: 8,
+        },
+      ];
+      const result = calculateAdaptiveDifficulty(analytics, "coding");
+      expect(result.recommended).toBe("expert");
+    });
+
+    it("returns a reason string", () => {
+      const result = calculateAdaptiveDifficulty([], "coding");
+      expect(result.reason).toBeTruthy();
+    });
+  });
+
+  describe("calculateRewards", () => {
+    const baseMission = {
+      id: "test",
+      type: "coding" as MissionType,
+      state: "completed" as MissionState,
+      priority: "high" as MissionPriority,
+      progress: 100,
+      dependencies: [],
+      totalPausedTime: 0,
+      category: "Engineering",
+      createdAt: "",
+      updatedAt: "",
+      template: {
+        name: "Test",
+        objective: "",
+        whyItMatters: "",
+        estimatedTime: 30,
+        difficulty: "intermediate" as Difficulty,
+        expectedOutput: "",
+        resources: [],
+        checklist: [],
+        successCriteria: [],
+        aiHints: [],
+        reflection: [],
+      },
+    };
+    const analytics: MissionAnalytics = {
+      completionTime: 25,
+      estimatedTime: 30,
+      difficulty: "intermediate",
+      focusScore: 85,
+      distractions: 0,
+      resourcesUsed: [],
+      aiAssistance: 0,
+      gitCommits: 0,
+      knowledgeGained: [],
+      reflectionQuality: 7,
+    };
+
+    it("calculates base XP", () => {
+      const rewards = calculateRewards(baseMission, analytics, 0);
+      expect(rewards.xp).toBeGreaterThan(100);
+    });
+
+    it("adds streak bonus", () => {
+      const rewards = calculateRewards(baseMission, analytics, 5);
+      expect(rewards.streakBonus).toBe(50);
+    });
+
+    it("awards badges for streaks", () => {
+      const rewards = calculateRewards(baseMission, analytics, 7);
+      expect(rewards.badges).toContain("weekly-warrior");
+    });
+  });
+
+  describe("getStreakLabel", () => {
+    it("returns start message for 0", () => {
+      expect(getStreakLabel(0)).toBe("Start a streak");
+    });
+
+    it("returns day count for low streaks", () => {
+      expect(getStreakLabel(3)).toContain("3");
+    });
+
+    it("returns legendary for 30+", () => {
+      expect(getStreakLabel(30)).toContain("legendary");
     });
   });
 });
