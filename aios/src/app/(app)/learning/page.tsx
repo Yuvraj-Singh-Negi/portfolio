@@ -18,13 +18,15 @@ import {
   GraduationCap,
 } from "lucide-react";
 
+import Link from "next/link";
+
 const quickLinks = [
-  { label: "Roadmap", icon: BookOpen },
-  { label: "Resources", icon: FileText },
-  { label: "Projects", icon: Beaker },
-  { label: "Quizzes", icon: ClipboardCheck },
-  { label: "Notes", icon: Bookmark },
-  { label: "Revision", icon: GraduationCap },
+  { label: "Roadmap", icon: BookOpen, href: "/roadmap" },
+  { label: "Resources", icon: FileText, href: "/library" },
+  { label: "Projects", icon: Beaker, href: "/projects" },
+  { label: "Skills", icon: ClipboardCheck, href: "/achievements" },
+  { label: "Notes", icon: Bookmark, href: "/notes" },
+  { label: "Revision", icon: GraduationCap, href: "/revision" },
 ];
 
 function TopicCard({ topic, index }: { topic: CurriculumTopic; index: number }) {
@@ -144,13 +146,14 @@ export default function LearningPage() {
           {quickLinks.map((link) => {
             const Icon = link.icon;
             return (
-              <button
+              <Link
                 key={link.label}
+                href={link.href}
                 className="flex items-center gap-1.5 rounded-lg border border-border bg-elevation-1 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-border-light transition-colors"
               >
                 <Icon className="h-3.5 w-3.5" />
                 {link.label}
-              </button>
+              </Link>
             );
           })}
         </div>

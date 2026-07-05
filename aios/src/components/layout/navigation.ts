@@ -13,6 +13,8 @@ import {
   Library,
   Calendar,
   Settings,
+  Route,
+  RefreshCw,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,9 +42,12 @@ export const navigation: NavSection[] = [
     label: "Workspace",
     items: [
       { label: "Learning", href: "/learning", icon: GraduationCap },
+      { label: "Roadmap", href: "/roadmap", icon: Route },
       { label: "Projects", href: "/projects", icon: FolderKanban },
       { label: "Knowledge Graph", href: "/knowledge", icon: BrainCircuit },
-      { label: "Research", href: "/research", icon: Microscope },
+      { label: "Skills & Badges", href: "/achievements", icon: Award },
+      { label: "Research & Papers", href: "/research", icon: Microscope },
+      { label: "Revision", href: "/revision", icon: RefreshCw },
       { label: "AI Mentor", href: "/mentor", icon: MessageSquare },
       { label: "Notes", href: "/notes", icon: BookOpen },
     ],
