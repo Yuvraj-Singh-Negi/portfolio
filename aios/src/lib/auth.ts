@@ -3,6 +3,11 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { getDatabase } from "./db";
 
 export const auth = betterAuth({
+  baseURL:
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.VERCEL_URL ||
+    "http://localhost:3000",
   database: drizzleAdapter(getDatabase()!, {
     provider: "pg",
   }),

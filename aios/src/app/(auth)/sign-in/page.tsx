@@ -32,20 +32,28 @@ export default function SignInPage() {
 
   const handleGithubSignIn = async () => {
     setLoading(true);
+    setError("");
     const { error: signInError } = await authClient.signIn.social({
       provider: "github",
+      callbackURL: "/dashboard",
     });
-    if (signInError) setError(signInError.message || "GitHub sign in failed");
-    setLoading(false);
+    if (signInError) {
+      setError(signInError.message || "GitHub sign in failed");
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setError("");
     const { error: signInError } = await authClient.signIn.social({
       provider: "google",
+      callbackURL: "/dashboard",
     });
-    if (signInError) setError(signInError.message || "Google sign in failed");
-    setLoading(false);
+    if (signInError) {
+      setError(signInError.message || "Google sign in failed");
+      setLoading(false);
+    }
   };
 
   return (
