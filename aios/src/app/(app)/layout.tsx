@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { Shell } from "@/components/layout/shell";
 import { navigation } from "@/components/layout/navigation";
+import { WelcomeTutorial } from "@/components/onboarding/welcome-tutorial";
 
 function getTitle(pathname: string): string | undefined {
   for (const section of navigation) {
@@ -20,5 +21,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const title = getTitle(pathname);
 
-  return <Shell title={title}>{children}</Shell>;
+  return (
+    <>
+      <WelcomeTutorial />
+      <Shell title={title}>{children}</Shell>
+    </>
+  );
 }

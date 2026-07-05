@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicRoutes = ["/", "/api/auth", "/_next", "/favicon.ico"];
+const publicRoutes = ["/", "/sign-in", "/sign-up", "/api/auth", "/_next", "/favicon.ico"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,14 +14,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const authUrl = new URL("/api/auth/get-session", request.url);
-  const response = await fetch(authUrl, {
+  const sessionUrl = new URL("/api/auth/session", request.url);
+  const response = await fetch(sessionUrl, {
     headers: { cookie: request.headers.get("cookie") || "" },
   });
 
   if (!response.ok) {
-    const loginUrl = new URL("/", request.url);
-    loginUrl.searchParams.set("sign-in", "true");
+    const loginUrl = new URL("/sign-in", request.url);
     return NextResponse.redirect(loginUrl);
   }
 

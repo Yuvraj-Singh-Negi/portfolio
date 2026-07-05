@@ -4,71 +4,9 @@ import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ExternalLink,
-  GitBranch,
-  AlertCircle,
-  CheckCircle2,
-  Code2,
-  Container,
-  Database,
-  Server,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { useProjectStore } from "@/features/projects/store";
+import { ExternalLink, GitBranch, AlertCircle, CheckCircle2, Code2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Project {
-  name: string;
-  description: string;
-  repo: string;
-  branch: string;
-  progress: number;
-  health: "good" | "warning" | "critical";
-  priority: "high" | "medium" | "low";
-  issues: number;
-  lastCommit: string;
-  stack: string[];
-  deployUrl?: string;
-}
-
-const projects: Project[] = [
-  {
-    name: "AIOS Core",
-    description: "Engineering operating system platform — the central hub",
-    repo: "github.com/user/aios-core",
-    branch: "main",
-    progress: 45,
-    health: "good",
-    priority: "high",
-    issues: 3,
-    lastCommit: "2h ago",
-    stack: ["TypeScript", "React", "Next.js", "PostgreSQL"],
-  },
-  {
-    name: "API Gateway",
-    description: "Rate limiting, auth, and routing service for microservices",
-    repo: "github.com/user/api-gateway",
-    branch: "feat/rate-limit",
-    progress: 78,
-    health: "good",
-    priority: "high",
-    issues: 5,
-    lastCommit: "1h ago",
-    stack: ["Go", "Redis", "Docker", "gRPC"],
-  },
-  {
-    name: "Knowledge Graph",
-    description: "Vector search and semantic knowledge mapping engine",
-    repo: "github.com/user/knowledge-graph",
-    branch: "develop",
-    progress: 32,
-    health: "warning",
-    priority: "medium",
-    issues: 8,
-    lastCommit: "1d ago",
-    stack: ["Python", "Neo4j", "FastAPI", "Docker"],
-  },
-];
 
 const healthIcon = {
   good: CheckCircle2,
@@ -82,23 +20,25 @@ const healthColor = {
   critical: "text-accent-red",
 };
 
-const priorityColor = {
-  high: "danger",
-  medium: "warning",
-  low: "default",
-} as const;
-
-const stackIcons: Record<string, LucideIcon> = {
-  TypeScript: Code2,
-  "Next.js": Server,
-  PostgreSQL: Database,
-  Docker: Container,
-  Go: Code2,
-  Redis: Server,
-  Python: Code2,
-};
-
 export function CurrentProjects() {
+  const projects = useProjectStore((s) => s.projects);
+
+  if (projects.length === 0) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold">Current Projects</h2>
+        </div>
+        <GlassCard className="p-8 text-center">
+          <p className="text-sm text-muted-foreground">No projects yet</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Create your first project to start tracking engineering work.
+          </p>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -108,11 +48,11 @@ export function CurrentProjects() {
         </button>
       </div>
       <div className="space-y-3">
-        {projects.map((project, i) => {
-          const HealthIcon = healthIcon[project.health];
+        {projects.slice(0, 3).map((project, i) => {
+          const HealthIcon = healthIcon[project.health || "good"];
           return (
             <motion.div
-              key={project.name}
+              key={project.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + i * 0.06 }}
@@ -125,25 +65,22 @@ export function CurrentProjects() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="text-sm font-semibold">{project.name}</h3>
-                      <Badge
-                        variant={
-                          priorityColor[project.priority] as "danger" | "warning" | "default"
-                        }
-                        size="sm"
-                      >
-                        {project.priority}
+                      <Badge variant="default" size="sm">
+                        {project.complexity}/10
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">{project.description}</p>
                   </div>
-                  <HealthIcon className={cn("h-5 w-5 shrink-0", healthColor[project.health])} />
+                  <HealthIcon
+                    className={cn("h-5 w-5 shrink-0", healthColor[project.health || "good"])}
+                  />
                 </div>
 
                 <div className="mb-3">
                   <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                     <span className="flex items-center gap-1">
                       <GitBranch className="h-3 w-3" />
-                      {project.branch}
+                      {project.branch || "main"}
                     </span>
                     <span>{project.progress}%</span>
                   </div>
@@ -160,21 +97,18 @@ export function CurrentProjects() {
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-3">
                   <span className="flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    {project.issues} open issues
+                    {project.openIssues || 0} open issues
                   </span>
-                  <span>Last commit: {project.lastCommit}</span>
+                  <span>Updated: {new Date(project.updatedAt).toLocaleDateString()}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                  {project.stack.map((tech) => {
-                    const StackIcon = stackIcons[tech] || Code2;
-                    return (
-                      <Badge key={tech} variant="default" size="sm">
-                        <StackIcon className="mr-1 h-2.5 w-2.5" />
-                        {tech}
-                      </Badge>
-                    );
-                  })}
+                  {project.technologies.map((tech) => (
+                    <Badge key={tech} variant="default" size="sm">
+                      <Code2 className="mr-1 h-2.5 w-2.5" />
+                      {tech}
+                    </Badge>
+                  ))}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -182,10 +116,12 @@ export function CurrentProjects() {
                     <ExternalLink className="h-3.5 w-3.5" />
                     Open
                   </Button>
-                  <Button size="sm" variant="ghost" className="flex-1">
-                    <GitBranch className="h-3.5 w-3.5" />
-                    Repository
-                  </Button>
+                  {project.repository && (
+                    <Button size="sm" variant="ghost" className="flex-1">
+                      <GitBranch className="h-3.5 w-3.5" />
+                      Repository
+                    </Button>
+                  )}
                 </div>
               </GlassCard>
             </motion.div>

@@ -152,7 +152,12 @@ export default function SignInPage() {
 
       <p className="text-center text-xs text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <button className="text-accent-green hover:underline">Sign up</button>
+        <button
+          onClick={() => router.push("/sign-up")}
+          className="text-accent-green hover:underline"
+        >
+          Sign up
+        </button>
       </p>
     </div>
   );

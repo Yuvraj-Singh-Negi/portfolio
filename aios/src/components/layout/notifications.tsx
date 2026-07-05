@@ -2,42 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, GitCommit, Award, Zap, BookOpen } from "lucide-react";
-
-const notifications = [
-  {
-    id: "1",
-    icon: GitCommit,
-    title: "Mission completed",
-    description: "Rate Limiter design pattern",
-    time: "2m ago",
-    color: "text-accent-green",
-  },
-  {
-    id: "2",
-    icon: Award,
-    title: "Achievement unlocked",
-    description: "7-day streak — 840 XP",
-    time: "1h ago",
-    color: "text-accent-amber",
-  },
-  {
-    id: "3",
-    icon: Zap,
-    title: "Skill leveled up",
-    description: "TypeScript: Lv. 5 → Lv. 6",
-    time: "3h ago",
-    color: "text-accent-blue",
-  },
-  {
-    id: "4",
-    icon: BookOpen,
-    title: "New resource available",
-    description: "System Design Interview vol.2",
-    time: "5h ago",
-    color: "text-accent-purple",
-  },
-];
+import { Bell, X } from "lucide-react";
 
 export function Notifications() {
   const [open, setOpen] = useState(false);
@@ -49,7 +14,6 @@ export function Notifications() {
         className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-elevation-2"
       >
         <Bell className="h-4 w-4" />
-        <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent-green shadow-[0_0_6px_rgba(34,211,160,0.5)]" />
       </button>
 
       <AnimatePresence>
@@ -73,28 +37,12 @@ export function Notifications() {
                 </button>
               </div>
 
-              <div className="max-h-80 overflow-y-auto">
-                {notifications.map((n) => (
-                  <button
-                    key={n.id}
-                    className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-elevation-1"
-                  >
-                    <div className={`mt-0.5 ${n.color}`}>
-                      <n.icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{n.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{n.description}</p>
-                    </div>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">{n.time}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="border-t border-border p-3 text-center">
-                <button className="text-xs font-medium text-accent-green hover:underline">
-                  View all notifications
-                </button>
+              <div className="p-8 text-center">
+                <Bell className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">No notifications</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Notifications will appear here as you use AIOS.
+                </p>
               </div>
             </motion.div>
           </>

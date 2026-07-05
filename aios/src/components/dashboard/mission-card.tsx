@@ -5,33 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Play,
-  Pause,
-  CheckCircle2,
-  Lightbulb,
-  Clock,
-  Target,
-  BookOpen,
-  ChevronDown,
-  Zap,
-  Circle,
-} from "lucide-react";
-
-const checklist = [
-  { id: 1, label: "Research token bucket algorithm", duration: "20 min", done: true },
-  { id: 2, label: "Set up Redis connection module", duration: "30 min", done: false },
-  { id: 3, label: "Implement rate limiter class", duration: "45 min", done: false },
-  { id: 4, label: "Create middleware function", duration: "30 min", done: false },
-  { id: 5, label: "Write unit tests", duration: "40 min", done: false },
-  { id: 6, label: "Integration test with API gateway", duration: "35 min", done: false },
-];
-
-const dependencies = ["Redis must be running locally", "API Gateway branch: feat/rate-limit"];
+import { useMissionStore } from "@/features/mission/store";
+import { Play, Pause, Lightbulb, Clock, ChevronDown, Circle } from "lucide-react";
 
 export function MissionCard() {
+  const currentMission = useMissionStore((s) => s.currentMission);
+  const toggleChecklistItem = useMissionStore((s) => s.toggleChecklistItem);
   const [expanded, setExpanded] = useState(false);
   const [showAI, setShowAI] = useState(false);
+
+  if (!currentMission) return null;
+
+  const checklist = currentMission.template.checklist;
   const completed = checklist.filter((t) => t.done).length;
 
   return (
@@ -49,26 +34,17 @@ export function MissionCard() {
                   Active Mission
                 </Badge>
                 <Badge variant="default" size="sm">
-                  Intermediate
+                  {currentMission.template.difficulty}
                 </Badge>
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  ~4 hours
-                </span>
-                <Badge variant="danger" size="sm">
-                  High Priority
-                </Badge>
-                <Badge variant="knowledge" size="sm">
-                  Backend
-                </Badge>
+                {currentMission.template.estimatedTime > 0 && (
+                  <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Clock className="h-3 w-3" />~{currentMission.template.estimatedTime} min
+                  </span>
+                )}
               </div>
-              <h2 className="text-xl font-bold tracking-tight">
-                Implement Rate-Limiting Middleware
-              </h2>
+              <h2 className="text-xl font-bold tracking-tight">{currentMission.template.name}</h2>
               <p className="mt-1 text-sm text-muted-foreground max-w-xl">
-                Design and implement a token bucket rate limiter with Redis backend for the API
-                Gateway project. This is a critical infrastructure component that will protect our
-                services from abuse.
+                {currentMission.template.objective}
               </p>
             </div>
             <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
@@ -114,31 +90,32 @@ export function MissionCard() {
               <Pause className="h-3.5 w-3.5" />
               Pause
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowAI(!showAI)}>
-              <Lightbulb className="h-3.5 w-3.5" />
-              AI Explanation
-            </Button>
+            {currentMission.template.aiHints.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={() => setShowAI(!showAI)}>
+                <Lightbulb className="h-3.5 w-3.5" />
+                AI Hints
+              </Button>
+            )}
           </div>
 
           <AnimatePresence>
-            {showAI && (
+            {showAI && currentMission.template.aiHints.length > 0 && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="mb-4 rounded-lg border border-accent-purple/20 bg-accent-purple/5 p-3">
+                <div className="mb-4 space-y-2 rounded-lg border border-accent-purple/20 bg-accent-purple/5 p-3">
                   <div className="flex items-start gap-2">
                     <Lightbulb className="mt-0.5 h-4 w-4 text-accent-purple shrink-0" />
                     <div>
-                      <p className="text-xs font-medium text-accent-purple mb-1">AI Analysis</p>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        A token bucket algorithm allows bursty traffic while maintaining an average
-                        rate limit. Consider implementing a sliding window log as an alternative —
-                        it provides more accurate rate limiting for bursty traffic patterns. The
-                        Redis-backed approach scales horizontally but adds ~2ms latency per request.
-                      </p>
+                      <p className="text-xs font-medium text-accent-purple mb-1">AI Hints</p>
+                      {currentMission.template.aiHints.map((hint, i) => (
+                        <p key={i} className="text-xs text-muted-foreground leading-relaxed mb-1">
+                          {i + 1}. {hint}
+                        </p>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -152,22 +129,18 @@ export function MissionCard() {
                 key={item.id}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: item.id * 0.04 }}
               >
                 <label
-                  className={`flex items-center gap-2.5 rounded-lg p-2.5 transition-colors hover:bg-elevation-2 cursor-pointer ${
-                    item.done ? "opacity-50" : ""
-                  }`}
+                  className={`flex items-center gap-2.5 rounded-lg p-2.5 transition-colors hover:bg-elevation-2 cursor-pointer ${item.done ? "opacity-50" : ""}`}
                 >
                   <input
                     type="checkbox"
-                    defaultChecked={item.done}
+                    checked={item.done}
+                    onChange={() => toggleChecklistItem(item.id)}
                     className="h-4 w-4 rounded border-border bg-elevation-3 text-accent-green focus:ring-accent-green/30"
                   />
                   <span
-                    className={`flex-1 text-sm ${
-                      item.done ? "text-muted-foreground line-through" : ""
-                    }`}
+                    className={`flex-1 text-sm ${item.done ? "text-muted-foreground line-through" : ""}`}
                   >
                     {item.label}
                   </span>
@@ -189,24 +162,11 @@ export function MissionCard() {
             </button>
           )}
 
-          {dependencies.length > 0 && (
-            <div className="mt-3 rounded-lg border border-accent-amber/20 bg-accent-amber/5 p-2.5">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Circle className="h-3 w-3 text-accent-amber" />
-                <span className="text-xs font-medium text-accent-amber">Dependencies</span>
-              </div>
-              {dependencies.map((dep) => (
-                <p key={dep} className="text-xs text-muted-foreground pl-5">
-                  {dep}
-                </p>
-              ))}
-            </div>
-          )}
-
           <div className="mt-3 flex items-center gap-2">
-            <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
+            <Circle className="h-3 w-3 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">
-              Resources: Token Bucket Algorithm, Redis Rate Limiting Guide, Express Middleware Docs
+              State: {currentMission.state} · Created:{" "}
+              {new Date(currentMission.createdAt).toLocaleDateString()}
             </span>
           </div>
 
