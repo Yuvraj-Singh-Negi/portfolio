@@ -14,8 +14,7 @@ export function WelcomeSection() {
         <div>
           <h1 className="text-xl font-bold tracking-tight">Welcome back, Engineer</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your command center is ready. <span className="text-accent-green">3 tasks</span> need
-            your attention today.
+            Your command center is ready. Start with a mission to begin your journey.
           </p>
         </div>
         <motion.div

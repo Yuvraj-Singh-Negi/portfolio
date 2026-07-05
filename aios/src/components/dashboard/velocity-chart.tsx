@@ -9,34 +9,34 @@ type Period = "daily" | "weekly" | "monthly";
 
 const data: Record<Period, { label: string; value: number }[]> = {
   daily: [
-    { label: "Mon", value: 120 },
-    { label: "Tue", value: 90 },
-    { label: "Wed", value: 150 },
-    { label: "Thu", value: 110 },
-    { label: "Fri", value: 80 },
-    { label: "Sat", value: 45 },
-    { label: "Sun", value: 60 },
+    { label: "Mon", value: 0 },
+    { label: "Tue", value: 0 },
+    { label: "Wed", value: 0 },
+    { label: "Thu", value: 0 },
+    { label: "Fri", value: 0 },
+    { label: "Sat", value: 0 },
+    { label: "Sun", value: 0 },
   ],
   weekly: [
-    { label: "W1", value: 480 },
-    { label: "W2", value: 520 },
-    { label: "W3", value: 610 },
-    { label: "W4", value: 580 },
+    { label: "W1", value: 0 },
+    { label: "W2", value: 0 },
+    { label: "W3", value: 0 },
+    { label: "W4", value: 0 },
   ],
   monthly: [
-    { label: "Jan", value: 1800 },
-    { label: "Feb", value: 2100 },
-    { label: "Mar", value: 2400 },
-    { label: "Apr", value: 2200 },
-    { label: "May", value: 2800 },
-    { label: "Jun", value: 3100 },
+    { label: "Jan", value: 0 },
+    { label: "Feb", value: 0 },
+    { label: "Mar", value: 0 },
+    { label: "Apr", value: 0 },
+    { label: "May", value: 0 },
+    { label: "Jun", value: 0 },
   ],
 };
 
 export function VelocityChart() {
   const [period, setPeriod] = useState<Period>("daily");
   const active = data[period];
-  const max = Math.max(...active.map((d) => d.value));
+  const max = Math.max(...active.map((d) => d.value)) || 1;
 
   return (
     <GlassCard className="p-4">

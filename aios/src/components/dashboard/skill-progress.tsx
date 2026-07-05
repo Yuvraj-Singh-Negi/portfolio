@@ -10,13 +10,7 @@ interface Skill {
   color: string;
 }
 
-const skills: Skill[] = [
-  { name: "TypeScript", progress: 85, color: "bg-accent-blue" },
-  { name: "React", progress: 78, color: "bg-accent-cyan" },
-  { name: "System Design", progress: 62, color: "bg-accent-purple" },
-  { name: "Rust", progress: 34, color: "bg-accent-green" },
-  { name: "DevOps", progress: 45, color: "bg-accent-amber" },
-];
+const skills: Skill[] = [];
 
 export function SkillProgress() {
   return (

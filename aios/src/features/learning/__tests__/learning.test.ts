@@ -39,44 +39,30 @@ describe("Roadmaps", () => {
 });
 
 describe("Skill Tree", () => {
-  it("has skill categories", () => {
-    expect(skillTree.length).toBeGreaterThan(0);
+  it("starts empty for new users", () => {
+    expect(skillTree.length).toBe(0);
   });
 
-  it("each category has skills", () => {
-    for (const c of skillTree) {
-      expect(c.skills.length).toBeGreaterThan(0);
-    }
+  it("getSkillById returns undefined when no skills exist", () => {
+    expect(getSkillById("typescript")).toBeUndefined();
   });
 
-  it("getSkillById returns correct skill", () => {
-    const s = getSkillById("typescript");
-    expect(s).toBeDefined();
-    expect(s!.label).toBe("TypeScript");
+  it("getSkillCategory returns undefined when no categories exist", () => {
+    expect(getSkillCategory("programming")).toBeUndefined();
   });
 
-  it("getSkillCategory returns correct category", () => {
-    const c = getSkillCategory("programming");
-    expect(c).toBeDefined();
-    expect(c!.label).toBe("Programming");
+  it("getUnlockedSkills returns empty when no skills exist", () => {
+    const unlocked = getUnlockedSkills(new Set(["typescript"]));
+    expect(unlocked).toHaveLength(0);
   });
 
-  it("getUnlockedSkills returns skills with met prerequisites", () => {
-    const known = new Set(["typescript"]);
-    const unlocked = getUnlockedSkills(known);
-    expect(unlocked.some((s) => s.id === "go")).toBe(true);
-  });
-
-  it("getSkillPath resolves dependency chain", () => {
+  it("getSkillPath returns empty when no skills exist", () => {
     const path = getSkillPath("distributed-systems");
-    expect(path.length).toBeGreaterThanOrEqual(1);
-    expect(path[0].id).toBe("api-design");
+    expect(path).toHaveLength(0);
   });
 
-  it("getOverallSkillProgress returns a percentage", () => {
-    const p = getOverallSkillProgress();
-    expect(p).toBeGreaterThanOrEqual(0);
-    expect(p).toBeLessThanOrEqual(100);
+  it("getOverallSkillProgress returns 0 when no skills exist", () => {
+    expect(getOverallSkillProgress()).toBe(0);
   });
 });
 

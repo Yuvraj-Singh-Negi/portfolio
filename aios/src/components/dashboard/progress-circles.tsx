@@ -11,22 +11,7 @@ interface Skill {
   monthly: string;
 }
 
-const skills: Skill[] = [
-  { name: "TypeScript", progress: 85, color: "text-accent-blue", weekly: "+2%", monthly: "+8%" },
-  { name: "React", progress: 78, color: "text-accent-cyan", weekly: "+1%", monthly: "+5%" },
-  {
-    name: "System Design",
-    progress: 62,
-    color: "text-accent-purple",
-    weekly: "+4%",
-    monthly: "+12%",
-  },
-  { name: "Rust", progress: 34, color: "text-accent-green", weekly: "+3%", monthly: "+10%" },
-  { name: "DevOps", progress: 45, color: "text-accent-amber", weekly: "+1%", monthly: "+4%" },
-  { name: "AI/ML", progress: 28, color: "text-accent-purple", weekly: "+5%", monthly: "+15%" },
-  { name: "Backend", progress: 71, color: "text-accent-blue", weekly: "+2%", monthly: "+7%" },
-  { name: "Cloud", progress: 39, color: "text-accent-cyan", weekly: "+1%", monthly: "+3%" },
-];
+const skills: Skill[] = [];
 
 export function ProgressCircles() {
   return (
