@@ -4,10 +4,40 @@ import { Providers } from "@/lib/utils/providers";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "AIOS – AI Engineering Operating System",
+  title: {
+    default: "AIOS – AI Engineering Operating System",
+    template: "%s – AIOS",
+  },
   description:
     "An intelligent operating system for engineers combining learning, project management, AI mentoring, and knowledge management.",
   metadataBase: new URL("https://aios.dev"),
+  keywords: [
+    "AI",
+    "engineering",
+    "learning",
+    "project management",
+    "knowledge graph",
+    "developer tools",
+  ],
+  authors: [{ name: "AIOS" }],
+  creator: "AIOS",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "AIOS",
+    title: "AIOS – AI Engineering Operating System",
+    description:
+      "An intelligent operating system for engineers combining learning, project management, AI mentoring, and knowledge management.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AIOS – AI Engineering Operating System",
+    description: "An intelligent operating system for engineers.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
